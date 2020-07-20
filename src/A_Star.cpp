@@ -6,7 +6,7 @@
 
 #include "Node.hpp"
 
-A_Star::A_Star(std::vector<std::vector<char>> &inputGrid) {
+A_Star::A_Star(std::vector<std::vector<char>>& inputGrid) {
   grid_ = inputGrid;
   bool startFound = false;
   bool endFound = false;
@@ -36,7 +36,7 @@ void A_Star::printGrid() {
   }
 }
 
-auto A_Star::findShortest() -> std::vector<std::vector<char>> {
+void A_Star::calculateShortest() {
   openList_.push_back(startNode_);
   while (openList_.size() > 0) {
     auto currentNode = openList_[0];
@@ -54,8 +54,60 @@ auto A_Star::findShortest() -> std::vector<std::vector<char>> {
 
     if (currentNode == endNode_) {
       // backtrack through parents, return grid updated with shortest path
-      return grid_;
+      backtrack(currentNode);
+      return;
     }
+
+    // calculate coords of valid children
+    // (valid == (not a wall) && (not out of bounds))
+    auto children = getNeighbors(currentNode);
+
+    // TODO: add f, g, h, parent updating
   }
-  return grid_;
+  return;
+}
+
+void A_Star::backtrack(Node* currentNode) {
+  do {
+    auto row = currentNode->getPosition().first;
+    auto column = currentNode->getPosition().second;
+    grid_[row][column] = 'p';
+    currentNode = currentNode->getParent();
+  } while (currentNode != startNode_);
+  return;
+}
+
+auto A_Star::getNeighbors(Node* currentNode) -> std::vector<std::pair<int, int>> {
+  // check all neighbors of the currentNode
+  // starting at the north, going clockwise to the north-east
+  // <row, col> = (0,0) = currentNode position
+  int centerRow = currentNode->getPosition().first;
+  int centerColumn = currentNode->getPosition().second;
+  std::vector<std::pair<int, int>> relativePositions;
+  std::vector<std::pair<int, int>> validNeighbors;
+  relativePositions.push_back(std::make_pair(-1, 0));
+  relativePositions.push_back(std::make_pair(-1, 1));
+  relativePositions.push_back(std::make_pair(0, 1));
+  relativePositions.push_back(std::make_pair(1, 1));
+  relativePositions.push_back(std::make_pair(1, 0));
+  relativePositions.push_back(std::make_pair(1, -1));
+  relativePositions.push_back(std::make_pair(0, -1));
+  relativePositions.push_back(std::make_pair(-1, -1));
+  for (auto it = relativePositions.begin(); it != relativePositions.end(); it++) {
+    int itRow = (*it).first;
+    int itColumn = (*it).second;
+    bool outOfBounds = ((centerRow + itRow) < 0) || ((centerColumn + itColumn) < 0) ||
+                       ((centerRow + itRow) >= grid_.size()) ||
+                       ((centerColumn + itColumn) >= grid_[0].size());
+
+    if (outOfBounds) {
+      continue;
+    }
+    bool isWall = (grid_[centerRow + itRow][centerColumn + itColumn] == wall_);
+    if (isWall) {
+      continue;
+    }
+    validNeighbors.push_back(std::make_pair(centerRow + itRow, centerColumn + itColumn));
+  }
+  return validNeighbors;
 }

@@ -11,19 +11,25 @@ class A_Star {
  public:
   // input to constructor will be the the desired search grid
   explicit A_Star(std::vector<std::vector<char>> &input);
-  auto findShortest() -> std::vector<std::vector<char>>;
+  void calculateShortest();
   void printGrid();
 
  private:
   // 0 = ground
-  // 1 = wall
+  // w = wall
   // s = start
   // e = end
+  // p = shortest_path
+  // updates shortest path on grid_
+  void backtrack(Node *);
+  auto getNeighbors(Node *) -> std::vector<std::pair<int, int>>;
   std::vector<std::vector<char>> grid_;
   std::vector<Node *> openList_;
   std::vector<Node *> closeList_;
   Node *startNode_;
   Node *endNode_;
+  char wall_ = 'w';
+  char valid_ = '0';
 };
 
 #endif
