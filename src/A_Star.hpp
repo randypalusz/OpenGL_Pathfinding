@@ -3,6 +3,7 @@
 #ifndef A_Star_header
 #define A_Star_header
 
+#include <chrono>
 #include <vector>
 
 #include "Node.hpp"
@@ -30,8 +31,11 @@ class A_Star {
   std::vector<Node *> closeList_;
   Node *startNode_;
   Node *endNode_;
-  char wall_ = 'w';
-  char valid_ = '0';
+  char wall_ = '#';
+  char valid_ = '.';
 };
+
+using time_point = std::chrono::_V2::system_clock::time_point;
+void printSearchTime(time_point start, time_point end);
 
 #endif

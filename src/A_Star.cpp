@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include <algorithm>
+#include <chrono>
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -35,10 +36,12 @@ void A_Star::printGrid() {
     }
     std::cout << std::endl;
   }
+  std::cout << std::endl;
 }
 
 // TODO: rewrite using this: https://en.wikipedia.org/wiki/A*_search_algorithm
 void A_Star::calculateShortest() {
+  auto start = std::chrono::high_resolution_clock::now();
   addToOpenList(startNode_);
   while (openList_.size() > 0) {
     auto currentNode = openList_[0];
@@ -47,6 +50,8 @@ void A_Star::calculateShortest() {
 
     if (currentNode->equalsNode(endNode_)) {
       // backtrack through parents, return grid updated with shortest path
+      printSearchTime(start, std::chrono::high_resolution_clock::now());
+      std::cout << "Path Found!" << std::endl << std::endl;
       backtrack(currentNode);
       return;
     }
@@ -71,17 +76,19 @@ void A_Star::calculateShortest() {
       child->setH(getDistance(child, endNode_));
       child->setF(child->getG() + child->getH());
 
-      // check if the current child exists in the closeList_ by position
+      // check if the current child exists in the openList_ by position
       // if so, move on to the next child
       bool childInList = false;
       for (int j = 0; j < openList_.size(); j++) {
         Node* openNode = openList_[j];
         if (child->equalsNode(openNode)) {
-          childInList = true;
+          // changing this to <= gives same overall path distance,
+          // but may change path itself - also increases execution time
           if (child->getG() < openNode->getG()) {
             openList_.erase(openList_.begin() + j);
             addToOpenList(child);
           }
+          childInList = true;
           break;
         }
       }
@@ -90,6 +97,8 @@ void A_Star::calculateShortest() {
       }
     }
   }
+  printSearchTime(start, std::chrono::high_resolution_clock::now());
+  std::cout << "Path not found..." << std::endl << std::endl;
   return;
 }
 
@@ -98,7 +107,7 @@ void A_Star::backtrack(Node* currentNode) {
   do {
     auto row = currentNode->getPosition().first;
     auto column = currentNode->getPosition().second;
-    grid_[row][column] = 'p';
+    grid_[row][column] = 'o';
     currentNode = currentNode->getParent();
   } while (currentNode != startNode_);
   return;
@@ -153,4 +162,10 @@ void A_Star::addToOpenList(Node* node) {
   auto it = std::lower_bound(openList_.begin(), openList_.end(), node, compare);
   openList_.insert(it, node);
   return;
+}
+
+using time_point = std::chrono::_V2::system_clock::time_point;
+void printSearchTime(time_point start, time_point end) {
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+  std::cout << "Search Time: " << duration.count() << " microseconds" << std::endl;
 }
