@@ -22,8 +22,6 @@ A_Star::A_Star(std::vector<std::vector<char>>& inputGrid) {
       }
     }
   }
-  startNode_->printParams();
-  endNode_->printParams();
 }
 
 void A_Star::printGrid() {
@@ -81,7 +79,7 @@ void A_Star::calculateShortest() {
       bool childInList = false;
       for (int j = 0; j < openList_.size(); j++) {
         Node* openNode = openList_[j];
-        if ((child->equalsNode(openNode)) && (child->getG() >= openNode->getG())) {
+        if (child->equalsNode(openNode)) {
           childInList = true;
           break;
         }
