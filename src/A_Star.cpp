@@ -81,6 +81,10 @@ void A_Star::calculateShortest() {
         Node* openNode = openList_[j];
         if (child->equalsNode(openNode)) {
           childInList = true;
+          if (child->getG() < openNode->getG()) {
+            openList_.erase(openList_.begin() + j);
+            openList_.push_back(child);
+          }
           break;
         }
       }
