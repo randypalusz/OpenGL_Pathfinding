@@ -52,7 +52,7 @@ void A_Star::calculateShortest() {
     openList_.erase(openList_.begin() + currentIndex);
     closeList_.push_back(currentNode);
 
-    if (currentNode == endNode_) {
+    if (currentNode->equalsNode(endNode_)) {
       // backtrack through parents, return grid updated with shortest path
       backtrack(currentNode);
       return;
@@ -62,12 +62,40 @@ void A_Star::calculateShortest() {
     // (valid == (not a wall) && (not out of bounds))
     auto children = getNeighbors(currentNode);
 
-    // TODO: add f, g, h, parent updating
+    for (int i = 0; i < children.size(); i++) {
+      Node* child = children[i];
+      for (int j = 0; j < closeList_.size(); j++) {
+        if (child->equalsNode(closeList_[j])) {
+          continue;
+        }
+      }
+      child->setG(currentNode->getG() + 1);
+      child->setH((child->getPosition().first - endNode_->getPosition().first) *
+                      (child->getPosition().first - endNode_->getPosition().first) +
+                  (child->getPosition().second - endNode_->getPosition().second) *
+                      (child->getPosition().second - endNode_->getPosition().second));
+      child->setF(child->getG() + child->getH());
+
+      // check if the current child exists in the closeList_ by position
+      // if so, move on to the next child
+      bool childInList = false;
+      for (int j = 0; j < openList_.size(); j++) {
+        Node* openNode = openList_[j];
+        if ((child->equalsNode(openNode)) && (child->getG() >= openNode->getG())) {
+          childInList = true;
+          break;
+        }
+      }
+      if (!childInList) {
+        openList_.push_back(child);
+      }
+    }
   }
   return;
 }
 
 void A_Star::backtrack(Node* currentNode) {
+  currentNode = currentNode->getParent();
   do {
     auto row = currentNode->getPosition().first;
     auto column = currentNode->getPosition().second;

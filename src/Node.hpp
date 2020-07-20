@@ -27,10 +27,10 @@ class Node {
   void setF(double f) { f_ = f; }
   void printParams() {
     std::cout << "<Parent>, <Current>, <G, H, F>:\n";
-    std::cout << "<" << parent_ << ">, <" << position_.first << ", "
-              << position_.second << ">, <" << g_ << ", " << h_ << ", " << f_
-              << ">" << std::endl;
+    std::cout << "<" << parent_ << ">, <" << position_.first << ", " << position_.second
+              << ">, <" << g_ << ", " << h_ << ", " << f_ << ">" << std::endl;
   }
+  bool equalsNode(Node* current) { return (position_ == current->getPosition()); }
 
  private:
   Node* parent_;
