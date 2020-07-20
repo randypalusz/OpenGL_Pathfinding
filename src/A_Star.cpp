@@ -63,11 +63,16 @@ void A_Star::calculateShortest() {
     auto children = getNeighbors(currentNode);
 
     for (int i = 0; i < children.size(); i++) {
+      bool childInCloseList = false;
       Node* child = children[i];
       for (int j = 0; j < closeList_.size(); j++) {
         if (child->equalsNode(closeList_[j])) {
-          continue;
+          childInCloseList = true;
+          break;
         }
+      }
+      if (childInCloseList) {
+        continue;
       }
       child->setG(currentNode->getG() + getDistance(currentNode, child));
       child->setH(getDistance(child, endNode_));
