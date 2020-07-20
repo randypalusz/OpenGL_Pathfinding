@@ -24,6 +24,7 @@ class A_Star {
   void backtrack(Node *);
   auto getNeighbors(Node *) -> std::vector<Node *>;
   auto getDistance(Node *, Node *) -> double;
+  void addToOpenList(Node *);
   std::vector<std::vector<char>> grid_;
   std::vector<Node *> openList_;
   std::vector<Node *> closeList_;

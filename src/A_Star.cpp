@@ -2,6 +2,7 @@
 
 #include <math.h>
 
+#include <algorithm>
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -38,19 +39,10 @@ void A_Star::printGrid() {
 
 // TODO: rewrite using this: https://en.wikipedia.org/wiki/A*_search_algorithm
 void A_Star::calculateShortest() {
-  openList_.push_back(startNode_);
+  addToOpenList(startNode_);
   while (openList_.size() > 0) {
     auto currentNode = openList_[0];
-    int currentIndex = 0;
-    for (int i = 0; i < openList_.size(); i++) {
-      auto tempNode = openList_[i];
-      if (tempNode->getF() < currentNode->getF()) {
-        currentNode = tempNode;
-        currentIndex = i;
-      }
-    }
-    // pop Node with lowest F score off of openList_, add to closedList_
-    openList_.erase(openList_.begin() + currentIndex);
+    openList_.erase(openList_.begin());
     closeList_.push_back(currentNode);
 
     if (currentNode->equalsNode(endNode_)) {
@@ -88,13 +80,13 @@ void A_Star::calculateShortest() {
           childInList = true;
           if (child->getG() < openNode->getG()) {
             openList_.erase(openList_.begin() + j);
-            openList_.push_back(child);
+            addToOpenList(child);
           }
           break;
         }
       }
       if (!childInList) {
-        openList_.push_back(child);
+        addToOpenList(child);
       }
     }
   }
@@ -154,4 +146,11 @@ auto A_Star::getDistance(Node* one, Node* two) -> double {
   auto pos2 = two->getPosition();
   return std::sqrt(std::pow(pos2.second - pos1.second, 2) +
                    std::pow(pos2.first - pos1.first, 2));
+}
+
+void A_Star::addToOpenList(Node* node) {
+  auto compare = [](Node* lhs, Node* rhs) { return lhs->getF() < rhs->getF(); };
+  auto it = std::lower_bound(openList_.begin(), openList_.end(), node, compare);
+  openList_.insert(it, node);
+  return;
 }
