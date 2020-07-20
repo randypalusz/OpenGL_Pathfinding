@@ -1,5 +1,7 @@
 #include "A_Star.hpp"
 
+#include <math.h>
+
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -67,11 +69,8 @@ void A_Star::calculateShortest() {
           continue;
         }
       }
-      child->setG(currentNode->getG() + 1);
-      child->setH((child->getPosition().first - endNode_->getPosition().first) *
-                      (child->getPosition().first - endNode_->getPosition().first) +
-                  (child->getPosition().second - endNode_->getPosition().second) *
-                      (child->getPosition().second - endNode_->getPosition().second));
+      child->setG(currentNode->getG() + getDistance(currentNode, child));
+      child->setH(getDistance(child, endNode_));
       child->setF(child->getG() + child->getH());
 
       // check if the current child exists in the closeList_ by position
@@ -142,4 +141,11 @@ auto A_Star::getNeighbors(Node* currentNode) -> std::vector<Node*> {
     validNeighbors.push_back(new Node(currentNode, position));
   }
   return validNeighbors;
+}
+
+auto A_Star::getDistance(Node* one, Node* two) -> double {
+  auto pos1 = one->getPosition();
+  auto pos2 = two->getPosition();
+  return std::sqrt(std::pow(pos2.second - pos1.second, 2) +
+                   std::pow(pos2.first - pos1.first, 2));
 }

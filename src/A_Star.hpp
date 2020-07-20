@@ -23,6 +23,7 @@ class A_Star {
   // updates shortest path on grid_
   void backtrack(Node *);
   auto getNeighbors(Node *) -> std::vector<Node *>;
+  auto getDistance(Node *, Node *) -> double;
   std::vector<std::vector<char>> grid_;
   std::vector<Node *> openList_;
   std::vector<Node *> closeList_;
