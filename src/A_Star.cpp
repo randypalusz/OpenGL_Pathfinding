@@ -77,14 +77,14 @@ void A_Star::backtrack(Node* currentNode) {
   return;
 }
 
-auto A_Star::getNeighbors(Node* currentNode) -> std::vector<std::pair<int, int>> {
+auto A_Star::getNeighbors(Node* currentNode) -> std::vector<Node*> {
   // check all neighbors of the currentNode
   // starting at the north, going clockwise to the north-east
   // <row, col> = (0,0) = currentNode position
   int centerRow = currentNode->getPosition().first;
   int centerColumn = currentNode->getPosition().second;
   std::vector<std::pair<int, int>> relativePositions;
-  std::vector<std::pair<int, int>> validNeighbors;
+  std::vector<Node*> validNeighbors;
   relativePositions.push_back(std::make_pair(-1, 0));
   relativePositions.push_back(std::make_pair(-1, 1));
   relativePositions.push_back(std::make_pair(0, 1));
@@ -107,7 +107,9 @@ auto A_Star::getNeighbors(Node* currentNode) -> std::vector<std::pair<int, int>>
     if (isWall) {
       continue;
     }
-    validNeighbors.push_back(std::make_pair(centerRow + itRow, centerColumn + itColumn));
+    std::pair<int, int> position =
+        std::make_pair(centerRow + itRow, centerColumn + itColumn);
+    validNeighbors.push_back(new Node(currentNode, position));
   }
   return validNeighbors;
 }

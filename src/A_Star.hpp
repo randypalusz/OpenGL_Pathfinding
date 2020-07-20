@@ -22,7 +22,7 @@ class A_Star {
   // p = shortest_path
   // updates shortest path on grid_
   void backtrack(Node *);
-  auto getNeighbors(Node *) -> std::vector<std::pair<int, int>>;
+  auto getNeighbors(Node *) -> std::vector<Node *>;
   std::vector<std::vector<char>> grid_;
   std::vector<Node *> openList_;
   std::vector<Node *> closeList_;
