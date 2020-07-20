@@ -36,6 +36,7 @@ void A_Star::printGrid() {
   }
 }
 
+// TODO: rewrite using this: https://en.wikipedia.org/wiki/A*_search_algorithm
 void A_Star::calculateShortest() {
   openList_.push_back(startNode_);
   while (openList_.size() > 0) {
