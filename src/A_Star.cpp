@@ -46,7 +46,8 @@ void A_Star::calculateShortest() {
   while (openList_.size() > 0) {
     auto currentNode = openList_[0];
     openList_.erase(openList_.begin());
-    closeList_.push_back(currentNode);
+    // closeList_.push_back(currentNode);
+    closeList_.insert(currentNode->getPosition());
 
     if (currentNode->equalsNode(endNode_)) {
       // backtrack through parents, return grid updated with shortest path
@@ -56,44 +57,43 @@ void A_Star::calculateShortest() {
       return;
     }
 
-    // calculate coords of valid children
+    // calculate coords of valid neighbors
     // (valid == (not a wall) && (not out of bounds))
-    auto children = getNeighbors(currentNode);
+    auto neighbors = getNeighbors(currentNode);
 
-    for (int i = 0; i < children.size(); i++) {
-      bool childInCloseList = false;
-      Node* child = children[i];
-      for (int j = 0; j < closeList_.size(); j++) {
-        if (child->equalsNode(closeList_[j])) {
-          childInCloseList = true;
-          break;
-        }
-      }
-      if (childInCloseList) {
+    for (int i = 0; i < neighbors.size(); i++) {
+      Node* neighbor = neighbors[i];
+
+      // continue if child in the visited list
+      if (closeList_.find(neighbor->getPosition()) != closeList_.end()) {
         continue;
       }
-      child->setG(currentNode->getG() + getDistance(currentNode, child));
-      child->setH(getDistance(child, endNode_));
-      child->setF(child->getG() + child->getH());
 
-      // check if the current child exists in the openList_ by position
-      // if so, move on to the next child
-      bool childInList = false;
+      neighbor->setG(currentNode->getG() + getDistance(currentNode, neighbor));
+      neighbor->setH(getDistance(neighbor, endNode_));
+      neighbor->setF(neighbor->getG() + neighbor->getH());
+
+      // At this point, we know the current neighbor hasn't been visited_.
+      // Check if the current neighbor exists in the openList_ by position -
+      // if so, move on to the next neighbor
+      bool neighborInList = false;
       for (int j = 0; j < openList_.size(); j++) {
         Node* openNode = openList_[j];
-        if (child->equalsNode(openNode)) {
-          // changing this to <= gives same overall path distance,
-          // but may change path itself - also increases execution time
-          if (child->getG() < openNode->getG()) {
+        // if neighbor (by position) is in the openList_...
+        if (neighbor->equalsNode(openNode)) {
+          // if the neighbor g_score is less than the openNode's g_score...
+          // overwrite that node in the openList_
+          if (neighbor->getG() < openNode->getG()) {
             openList_.erase(openList_.begin() + j);
-            addToOpenList(child);
+            addToOpenList(neighbor);
           }
-          childInList = true;
+          neighborInList = true;
           break;
         }
       }
-      if (!childInList) {
-        addToOpenList(child);
+
+      if (!neighborInList) {
+        addToOpenList(neighbor);
       }
     }
   }
