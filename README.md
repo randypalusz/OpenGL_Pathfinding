@@ -17,4 +17,4 @@ From the root directory, run the following:
 
 Run the main executable:
     
-    ./build/exe/main.cc
+    ./build/exe/A_Star.cc

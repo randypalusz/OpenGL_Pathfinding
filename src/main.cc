@@ -3,6 +3,7 @@
 // https://github.com/JoeyDeVries/LearnOpenGL
 // https://learnopengl.com/
 
+// OpenGL includes must be in this order
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
