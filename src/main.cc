@@ -1,13 +1,41 @@
 // Copyright 2020 <randypalusz>
 // Using this guide for reference:
-// https://medium.com/@nicholas.w.swift/easy-a-star-pathfinding-7e6689c7f7b2
+// https://github.com/JoeyDeVries/LearnOpenGL
+// https://learnopengl.com/
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include <chrono>
 #include <vector>
 
 #include "A_Star.hpp"
 
-int main() {
+void glfunctions();
+
+void glfunctions() {
+  bool running = true;
+  glfwInit();
+  glfwWindowHint(GLFW_SAMPLES, 4);
+  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
+  GLFWwindow* window = glfwCreateWindow(800, 600, "Window", NULL, NULL);
+  if (!window) {
+    glfwTerminate();
+  }
+  glfwMakeContextCurrent(window);
+  while (running) {
+    glfwPollEvents();
+    if (glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS) {
+      glfwSetWindowShouldClose(window, true);
+      running = false;
+    }
+  }
+  glfwDestroyWindow(window);
+}
+
+int main(int argc, char** argv) {
+  glfunctions();
   std::vector<std::vector<char>> grid{};
   grid.push_back(
       std::vector<char>{'.', '#', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.'});
@@ -26,4 +54,5 @@ int main() {
   path.printGrid();
   path.calculateShortest();
   path.printGrid();
+  glfwTerminate();
 }
