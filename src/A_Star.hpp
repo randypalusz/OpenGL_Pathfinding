@@ -22,6 +22,7 @@ class A_Star {
  public:
   // input to constructor will be the the desired search grid
   explicit A_Star(std::vector<std::vector<char>> &input);
+  explicit A_Star(std::string path);
   void calculateShortest();
   void printGrid();
 
@@ -32,6 +33,8 @@ class A_Star {
   // e = end
   // p = shortest_path
   // updates shortest path on grid_
+  void loadGridFromFile(std::string fileName);
+  void loadGridFromVector(std::vector<std::vector<char>> &input);
   void backtrack(Node *);
   auto getNeighbors(Node *) -> std::vector<Node *>;
   auto getDistance(Node *, Node *) -> double;

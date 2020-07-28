@@ -1,6 +1,6 @@
 # from here: https://github.com/aaronmjacobs/InitGL
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.17)
 
 project(A_Star)
 
@@ -24,6 +24,7 @@ set(Headers
 set(PROJECT_NAME ${PROJECT_NAME}.cc)
 
 add_executable(${PROJECT_NAME} ${Sources})
+target_link_libraries(${PROJECT_NAME} stdc++fs)
 target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
 
 # GLFW

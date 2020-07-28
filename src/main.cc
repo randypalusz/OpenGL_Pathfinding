@@ -56,21 +56,22 @@ void glfunctions() {
 
 int main(int argc, char** argv) {
   glfunctions();
-  std::vector<std::vector<char>> grid{};
-  grid.push_back(
-      std::vector<char>{'.', '#', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.'});
-  grid.push_back(
-      std::vector<char>{'.', '.', '.', '#', '#', '.', '.', '#', '.', '.', '#', '.'});
-  grid.push_back(
-      std::vector<char>{'.', '.', '#', '#', '.', '.', '.', '.', '.', '.', '#', 's'});
-  grid.push_back(
-      std::vector<char>{'e', '#', '.', '#', '.', '.', '.', '#', '.', '.', '#', '.'});
-  grid.push_back(
-      std::vector<char>{'.', '.', '.', '.', '.', '.', '#', '#', '.', '.', '.', '.'});
-  grid.push_back(
-      std::vector<char>{'.', '#', '.', '.', '.', '.', '#', '.', '.', '.', '.', '.'});
+  // std::vector<std::vector<char>> grid{};
+  // grid.push_back(
+  //     std::vector<char>{'.', '#', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.'});
+  // grid.push_back(
+  //     std::vector<char>{'.', '.', '.', '#', '#', '.', '.', '#', '.', '.', '#', '.'});
+  // grid.push_back(
+  //     std::vector<char>{'.', '.', '#', '#', '.', '.', '.', '.', '.', '.', '#', 's'});
+  // grid.push_back(
+  //     std::vector<char>{'e', '#', '.', '#', '.', '.', '.', '#', '.', '.', '#', '.'});
+  // grid.push_back(
+  //     std::vector<char>{'.', '.', '.', '.', '.', '.', '#', '#', '.', '.', '.', '.'});
+  // grid.push_back(
+  //     std::vector<char>{'.', '#', '.', '.', '.', '.', '#', '.', '.', '.', '.', '.'});
 
-  A_Star path{grid};
+  // A_Star path{grid};
+  A_Star path{"grid.txt"};
   path.printGrid();
   path.calculateShortest();
   path.printGrid();

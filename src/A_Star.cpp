@@ -7,26 +7,16 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <experimental/filesystem>
+#include <fstream>
 
 #include "Node.hpp"
 
 A_Star::A_Star(std::vector<std::vector<char>>& inputGrid) {
-  grid_ = inputGrid;
-  bool startFound = false;
-  bool endFound = false;
-  for (int row = 0; row < grid_.size(); row++) {
-    for (int column = 0; column < grid_[0].size(); column++) {
-      if ((grid_[row][column] == 's') && (!startFound)) {
-        startNode_ = new Node(nullptr, std::make_pair(row, column));
-        startFound = true;
-      }
-      if ((grid_[row][column] == 'e') && (!endFound)) {
-        endNode_ = new Node(nullptr, std::make_pair(row, column));
-        endFound = true;
-      }
-    }
-  }
+  loadGridFromVector(inputGrid);
 }
+
+A_Star::A_Star(std::string fileName) { loadGridFromFile(fileName); }
 
 void A_Star::printGrid() {
   std::cout << "Current Grid:" << std::endl;
@@ -100,6 +90,46 @@ void A_Star::calculateShortest() {
   printSearchTime(start, std::chrono::high_resolution_clock::now());
   std::cout << "Path not found..." << std::endl << std::endl;
   return;
+}
+
+void A_Star::loadGridFromFile(std::string fileName) {
+  std::vector<std::vector<char>> v;
+  auto path = std::experimental::filesystem::current_path();
+  path = path.append("resources");
+  path = path.append(fileName);
+  std::cout << "File: " << path << std::endl;
+  std::ifstream is(path);
+  char c;
+  int row = 0;
+  v.push_back(std::vector<char>{});
+  while (is.get(c)) {
+    std::cout << "Character: " << c << std::endl;
+    if (c == '\n') {
+      row++;
+      v.push_back(std::vector<char>{});
+      continue;
+    }
+    v[row].push_back(c);
+  }
+  loadGridFromVector(v);
+}
+
+void A_Star::loadGridFromVector(std::vector<std::vector<char>>& inputGrid) {
+  grid_ = inputGrid;
+  bool startFound = false;
+  bool endFound = false;
+  for (int row = 0; row < grid_.size(); row++) {
+    for (int column = 0; column < grid_[0].size(); column++) {
+      if ((grid_[row][column] == 's') && (!startFound)) {
+        startNode_ = new Node(nullptr, std::make_pair(row, column));
+        startFound = true;
+      }
+      if ((grid_[row][column] == 'e') && (!endFound)) {
+        endNode_ = new Node(nullptr, std::make_pair(row, column));
+        endFound = true;
+      }
+    }
+  }
 }
 
 void A_Star::backtrack(Node* currentNode) {
