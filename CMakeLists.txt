@@ -8,7 +8,7 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries)
+#set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(Sources
@@ -26,6 +26,11 @@ set(PROJECT_NAME ${PROJECT_NAME}.cc)
 add_executable(${PROJECT_NAME} ${Sources})
 target_link_libraries(${PROJECT_NAME} stdc++fs)
 target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
+
+# SFML
+# Install SFML via package manager
+find_package(SFML 2.5 COMPONENTS audio graphics window system REQUIRED)
+target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-system sfml-audio)
 
 ## GLFW
 ## Add glfw as a submodule in libraries/glfw
