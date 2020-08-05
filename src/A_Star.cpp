@@ -9,6 +9,7 @@
 #include <vector>
 #include <experimental/filesystem>
 #include <fstream>
+#include <unordered_set>
 
 #include "Node.hpp"
 
@@ -32,6 +33,7 @@ void A_Star::printGrid() {
 // TODO: rewrite using this: https://en.wikipedia.org/wiki/A*_search_algorithm
 void A_Star::calculateShortest() {
   auto start = std::chrono::high_resolution_clock::now();
+  std::vector<Node*> validNeighbors;
   addToOpenList(startNode_);
   while (openList_.size() > 0) {
     auto currentNode = openList_[0];
@@ -49,10 +51,10 @@ void A_Star::calculateShortest() {
 
     // calculate coords of valid neighbors
     // (valid == (not a wall) && (not out of bounds))
-    auto neighbors = getNeighbors(currentNode);
+    getNeighbors(validNeighbors, currentNode);
 
-    for (int i = 0; i < neighbors.size(); i++) {
-      Node* neighbor = neighbors[i];
+    for (int i = 0; i < validNeighbors.size(); i++) {
+      Node* neighbor = validNeighbors[i];
 
       // continue if child in the visited list
       if (closeList_.find(neighbor->getPosition()) != closeList_.end()) {
@@ -151,41 +153,56 @@ void A_Star::backtrack(Node* currentNode) {
   return;
 }
 
-auto A_Star::getNeighbors(Node* currentNode) -> std::vector<Node*> {
-  // check all neighbors of the currentNode
-  // starting at the north, going clockwise to the north-east
-  // <row, col> = (0,0) = currentNode position
-  int centerRow = currentNode->getPosition().first;
-  int centerColumn = currentNode->getPosition().second;
-  std::vector<std::pair<int, int>> relativePositions;
-  std::vector<Node*> validNeighbors;
-  relativePositions.push_back(std::make_pair(-1, 0));
-  relativePositions.push_back(std::make_pair(-1, 1));
-  relativePositions.push_back(std::make_pair(0, 1));
-  relativePositions.push_back(std::make_pair(1, 1));
-  relativePositions.push_back(std::make_pair(1, 0));
-  relativePositions.push_back(std::make_pair(1, -1));
-  relativePositions.push_back(std::make_pair(0, -1));
-  relativePositions.push_back(std::make_pair(-1, -1));
-  for (auto it = relativePositions.begin(); it != relativePositions.end(); it++) {
-    int itRow = (*it).first;
-    int itColumn = (*it).second;
+void A_Star::pushOnNeighborsList(Node* currentNode,
+                                 std::vector<std::pair<int, int>>& refPositions,
+                                 std::vector<Node*>& validNeighbors,
+                                 std::vector<bool>& wallOrOOB) {
+  auto centerRow = currentNode->getPosition().first;
+  auto centerColumn = currentNode->getPosition().second;
+  for (int i = 0; i < refPositions.size(); i++) {
+    auto currentPos = refPositions[i];
+    int itRow = currentPos.first;
+    int itColumn = currentPos.second;
+    int addedRelPos = itRow + itColumn;
+
     bool outOfBounds = ((centerRow + itRow) < 0) || ((centerColumn + itColumn) < 0) ||
                        ((centerRow + itRow) >= grid_.size()) ||
                        ((centerColumn + itColumn) >= grid_[0].size());
-
     if (outOfBounds) {
       continue;
     }
+
     bool isWall = (grid_[centerRow + itRow][centerColumn + itColumn] == wall_);
     if (isWall) {
       continue;
     }
+    wallOrOOB[i] = false;
     std::pair<int, int> position =
         std::make_pair(centerRow + itRow, centerColumn + itColumn);
     validNeighbors.push_back(new Node(currentNode, position));
   }
-  return validNeighbors;
+}
+
+void A_Star::getNeighbors(std::vector<Node*>& validNeighbors, Node* currentNode) {
+  validNeighbors.clear();
+  std::vector<std::pair<int, int>> secondaryPositions;
+  // wallOrOutOfBounds             N     E     S     W
+  std::vector<bool> wallOrOOB = {true, true, true, true};
+  pushOnNeighborsList(currentNode, primaryPositions_, validNeighbors, wallOrOOB);
+
+  if (!wallOrOOB[0] || !wallOrOOB[1])
+    secondaryPositions.push_back(std::make_pair(-1, 1));  // NE
+
+  if (!wallOrOOB[1] || !wallOrOOB[2])
+    secondaryPositions.push_back(std::make_pair(1, 1));  // SE
+
+  if (!wallOrOOB[2] || !wallOrOOB[3])
+    secondaryPositions.push_back(std::make_pair(1, -1));  // SW
+
+  if (!wallOrOOB[3] || !wallOrOOB[0])
+    secondaryPositions.push_back(std::make_pair(-1, -1));  // NW
+
+  pushOnNeighborsList(currentNode, secondaryPositions, validNeighbors, wallOrOOB);
 }
 
 auto A_Star::getDistance(Node* one, Node* two) -> double {

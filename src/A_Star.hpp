@@ -36,7 +36,11 @@ class A_Star {
   void loadGridFromFile(std::string fileName);
   void loadGridFromVector(std::vector<std::vector<char>> &input);
   void backtrack(Node *);
-  auto getNeighbors(Node *) -> std::vector<Node *>;
+  void getNeighbors(std::vector<Node *> &validNeighbors, Node *);
+  void pushOnNeighborsList(Node *currentNode,
+                           std::vector<std::pair<int, int>> &referencePositions,
+                           std::vector<Node *> &validNeighbors,
+                           std::vector<bool> &wallOrOOB);
   auto getDistance(Node *, Node *) -> double;
   void addToOpenList(Node *);
   std::vector<std::vector<char>> grid_;
@@ -44,6 +48,12 @@ class A_Star {
   std::unordered_set<std::pair<int, int>, hash_pair> closeList_;
   Node *startNode_;
   Node *endNode_;
+  std::vector<std::pair<int, int>> primaryPositions_{
+      std::make_pair(-1, 0),  // N
+      std::make_pair(0, 1),   // E
+      std::make_pair(1, 0),   // S
+      std::make_pair(0, -1)   // W
+  };
   char wall_ = '#';
   char valid_ = '.';
 };
