@@ -116,19 +116,27 @@ void A_Star::loadGridFromFile(std::string fileName) {
 
 void A_Star::loadGridFromVector(std::vector<std::vector<char>>& inputGrid) {
   grid_ = inputGrid;
-  bool startFound = false;
-  bool endFound = false;
+  int startFound = 0;
+  int endFound = 0;
   for (int row = 0; row < grid_.size(); row++) {
     for (int column = 0; column < grid_[0].size(); column++) {
-      if ((grid_[row][column] == 's') && (!startFound)) {
-        startNode_ = new Node(nullptr, std::make_pair(row, column));
-        startFound = true;
-      }
-      if ((grid_[row][column] == 'e') && (!endFound)) {
-        endNode_ = new Node(nullptr, std::make_pair(row, column));
-        endFound = true;
+      switch (grid_[row][column]) {
+        case 's':
+          startNode_ = new Node(nullptr, std::make_pair(row, column));
+          startFound++;
+          break;
+        case 'e':
+          endNode_ = new Node(nullptr, std::make_pair(row, column));
+          endFound++;
+          break;
+        default:
+          break;
       }
     }
+  }
+  if ((startFound != 1) || (endFound != 1)) {
+    std::cout << "Invalid number of start/end points..." << std::endl;
+    exit(1);
   }
 }
 

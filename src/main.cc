@@ -1,7 +1,4 @@
 // Copyright 2020 <randypalusz>
-// Using this guide for reference:
-// https://github.com/JoeyDeVries/LearnOpenGL
-// https://learnopengl.com/
 
 #include <SFML/Graphics.hpp>
 
@@ -27,25 +24,36 @@ void sfmlTest() {
   }
 }
 
-int main(int argc, char** argv) {
-  // std::vector<std::vector<char>> grid{};
-  // grid.push_back(
-  //     std::vector<char>{'.', '#', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.'});
-  // grid.push_back(
-  //     std::vector<char>{'.', '.', '.', '#', '#', '.', '.', '#', '.', '.', '#', '.'});
-  // grid.push_back(
-  //     std::vector<char>{'.', '.', '#', '#', '.', '.', '.', '.', '.', '.', '#', 's'});
-  // grid.push_back(
-  //     std::vector<char>{'e', '#', '.', '#', '.', '.', '.', '#', '.', '.', '#', '.'});
-  // grid.push_back(
-  //     std::vector<char>{'.', '.', '.', '.', '.', '.', '#', '#', '.', '.', '.', '.'});
-  // grid.push_back(
-  //     std::vector<char>{'.', '#', '.', '.', '.', '.', '#', '.', '.', '.', '.', '.'});
+auto createAStarFromGrid() -> A_Star* {
+  std::vector<std::vector<char>> grid{};
+  grid.push_back(
+      std::vector<char>{'.', '#', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.'});
+  grid.push_back(
+      std::vector<char>{'.', '.', '.', '#', '#', '.', '.', '#', '.', '.', '#', '.'});
+  grid.push_back(
+      std::vector<char>{'.', '.', '#', '#', '.', '.', '.', '.', '.', '.', '#', 's'});
+  grid.push_back(
+      std::vector<char>{'e', '#', '.', '#', '.', '.', '.', '#', '.', '.', '#', '.'});
+  grid.push_back(
+      std::vector<char>{'.', '.', '.', '.', '.', '.', '#', '#', '.', '.', '.', '.'});
+  grid.push_back(
+      std::vector<char>{'.', '#', '.', '.', '.', '.', '#', '.', '.', '.', '.', '.'});
 
-  // A_Star path{grid};
+  A_Star* path = new A_Star(grid);
+  return path;
+}
+
+auto createAStarFromFile() -> A_Star* {
+  A_Star* path = new A_Star("grid.txt");
+  return path;
+}
+
+int main(int argc, char** argv) {
   sfmlTest();
-  A_Star path{"grid.txt"};
-  path.printGrid();
-  path.calculateShortest();
-  path.printGrid();
+  // A_Star path{"grid.txt"};
+  // auto path = createAStarFromGrid();
+  auto path = createAStarFromFile();
+  path->printGrid();
+  path->calculateShortest();
+  path->printGrid();
 }
