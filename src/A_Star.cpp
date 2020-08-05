@@ -153,6 +153,8 @@ void A_Star::backtrack(Node* currentNode) {
   return;
 }
 
+// TODO: wallOrOOB not always used - find a way to make this optional while maintaining
+// performance
 void A_Star::pushOnNeighborsList(Node* currentNode,
                                  std::vector<std::pair<int, int>>& refPositions,
                                  std::vector<Node*>& validNeighbors,
