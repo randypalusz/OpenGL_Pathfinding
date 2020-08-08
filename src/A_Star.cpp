@@ -222,7 +222,7 @@ void A_Star::addToOpenList(Node* node) {
   return;
 }
 
-using time_point = std::chrono::system_clock::time_point;
+using time_point = std::chrono::high_resolution_clock::time_point;
 void printSearchTime(time_point start, time_point end) {
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
   std::cout << "Search Time: " << duration.count() << " microseconds" << std::endl;

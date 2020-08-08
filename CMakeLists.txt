@@ -24,7 +24,16 @@ set(Headers
 set(PROJECT_NAME ${PROJECT_NAME}.cc)
 
 add_executable(${PROJECT_NAME} ${Sources})
-target_link_libraries(${PROJECT_NAME} stdc++fs)
+
+if(APPLE)
+  message("No linking stdc++fs on MAC OS X")
+endif()
+
+if(NOT APPLE)
+  message("Linking stdc++fs on Linux")
+  target_link_libraries(${PROJECT_NAME} stdc++fs)
+endif()
+
 target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
 
 # SFML
