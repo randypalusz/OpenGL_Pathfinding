@@ -94,7 +94,7 @@ void A_Star::calculateShortest() {
   return;
 }
 
-void A_Star::loadGridFromFile(std::string fileName) {
+void A_Star::loadGridFromFile(const std::string fileName) {
   std::vector<std::vector<char>> v;
   auto path = std::filesystem::current_path();
   path = path.append("resources");
@@ -116,7 +116,7 @@ void A_Star::loadGridFromFile(std::string fileName) {
   loadGridFromVector(v);
 }
 
-void A_Star::loadGridFromVector(std::vector<std::vector<char>>& inputGrid) {
+void A_Star::loadGridFromVector(const std::vector<std::vector<char>>& inputGrid) {
   grid_ = inputGrid;
   int startFound = 0;
   int endFound = 0;
@@ -155,10 +155,12 @@ void A_Star::backtrack(Node* currentNode) {
 
 // TODO: wallOrOOB not always used - find a way to make this optional while maintaining
 // performance
-void A_Star::pushOnNeighborsList(Node* currentNode,
-                                 std::vector<std::pair<int, int>>& refPositions,
-                                 std::vector<Node*>& validNeighbors,
-                                 std::vector<bool>& wallOrOOB) {
+auto A_Star::pushOnNeighborsList(Node* currentNode,
+                                 const std::vector<std::pair<int, int>>& refPositions,
+                                 std::vector<Node*>& validNeighbors)
+    -> const std::vector<bool> {
+  // wallOrOutOfBounds             N     E     S     W
+  std::vector<bool> wallOrOOB = {true, true, true, true};
   auto centerRow = currentNode->getPosition().first;
   auto centerColumn = currentNode->getPosition().second;
   for (int i = 0; i < refPositions.size(); i++) {
@@ -183,14 +185,13 @@ void A_Star::pushOnNeighborsList(Node* currentNode,
         std::make_pair(centerRow + itRow, centerColumn + itColumn);
     validNeighbors.push_back(new Node(currentNode, position));
   }
+  return wallOrOOB;
 }
 
 void A_Star::getNeighbors(std::vector<Node*>& validNeighbors, Node* currentNode) {
   validNeighbors.clear();
   std::vector<std::pair<int, int>> secondaryPositions;
-  // wallOrOutOfBounds             N     E     S     W
-  std::vector<bool> wallOrOOB = {true, true, true, true};
-  pushOnNeighborsList(currentNode, primaryPositions_, validNeighbors, wallOrOOB);
+  auto wallOrOOB = pushOnNeighborsList(currentNode, primaryPositions_, validNeighbors);
 
   if (!wallOrOOB[0] || !wallOrOOB[1])
     secondaryPositions.push_back(std::make_pair(-1, 1));  // NE
@@ -204,10 +205,10 @@ void A_Star::getNeighbors(std::vector<Node*>& validNeighbors, Node* currentNode)
   if (!wallOrOOB[3] || !wallOrOOB[0])
     secondaryPositions.push_back(std::make_pair(-1, -1));  // NW
 
-  pushOnNeighborsList(currentNode, secondaryPositions, validNeighbors, wallOrOOB);
+  pushOnNeighborsList(currentNode, secondaryPositions, validNeighbors);
 }
 
-auto A_Star::getDistance(Node* one, Node* two) -> double {
+auto A_Star::getDistance(Node* one, Node* two) const -> double {
   auto pos1 = one->getPosition();
   auto pos2 = two->getPosition();
   return std::sqrt(std::pow(pos2.second - pos1.second, 2) +

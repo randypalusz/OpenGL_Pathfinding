@@ -33,15 +33,15 @@ class A_Star {
   // e = end
   // p = shortest_path
   // updates shortest path on grid_
-  void loadGridFromFile(std::string fileName);
-  void loadGridFromVector(std::vector<std::vector<char>> &input);
+  void loadGridFromFile(const std::string fileName);
+  void loadGridFromVector(const std::vector<std::vector<char>> &input);
   void backtrack(Node *);
   void getNeighbors(std::vector<Node *> &validNeighbors, Node *);
-  void pushOnNeighborsList(Node *currentNode,
-                           std::vector<std::pair<int, int>> &referencePositions,
-                           std::vector<Node *> &validNeighbors,
-                           std::vector<bool> &wallOrOOB);
-  auto getDistance(Node *, Node *) -> double;
+  auto pushOnNeighborsList(Node *currentNode,
+                           const std::vector<std::pair<int, int>> &referencePositions,
+                           std::vector<Node *> &validNeighbors)
+      -> const std::vector<bool>;
+  auto getDistance(Node *, Node *) const -> double;
   void addToOpenList(Node *);
   std::vector<std::vector<char>> grid_;
   std::vector<Node *> openList_;
