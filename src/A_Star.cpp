@@ -7,7 +7,7 @@
 #include <iostream>
 #include <utility>
 #include <vector>
-#include <experimental/filesystem>
+#include <filesystem>
 #include <fstream>
 #include <unordered_set>
 
@@ -96,7 +96,7 @@ void A_Star::calculateShortest() {
 
 void A_Star::loadGridFromFile(std::string fileName) {
   std::vector<std::vector<char>> v;
-  auto path = std::experimental::filesystem::current_path();
+  auto path = std::filesystem::current_path();
   path = path.append("resources");
   path = path.append(fileName);
   std::cout << "File: " << path << std::endl;
@@ -221,7 +221,7 @@ void A_Star::addToOpenList(Node* node) {
   return;
 }
 
-using time_point = std::chrono::_V2::system_clock::time_point;
+using time_point = std::chrono::system_clock::time_point;
 void printSearchTime(time_point start, time_point end) {
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
   std::cout << "Search Time: " << duration.count() << " microseconds" << std::endl;

@@ -58,7 +58,7 @@ class A_Star {
   char valid_ = '.';
 };
 
-using time_point = std::chrono::_V2::system_clock::time_point;
+using time_point = std::chrono::system_clock::time_point;
 void printSearchTime(time_point start, time_point end);
 
 #endif
