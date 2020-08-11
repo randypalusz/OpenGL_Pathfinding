@@ -13,11 +13,15 @@
 
 #include "Node.hpp"
 
-A_Star::A_Star(std::vector<std::vector<char>>& inputGrid) {
+A_Star::A_Star(std::vector<std::vector<char>>& inputGrid, bool hugWalls) {
+  hugWalls_ = hugWalls;
   loadGridFromVector(inputGrid);
 }
 
-A_Star::A_Star(std::string fileName) { loadGridFromFile(fileName); }
+A_Star::A_Star(std::string fileName, bool hugWalls) {
+  hugWalls_ = hugWalls;
+  loadGridFromFile(fileName);
+}
 
 void A_Star::printGrid() {
   std::cout << "Current Grid:" << std::endl;
@@ -193,17 +197,31 @@ void A_Star::getNeighbors(std::vector<Node*>& validNeighbors, Node* currentNode)
   std::vector<std::pair<int, int>> secondaryPositions;
   auto wallOrOOB = pushOnNeighborsList(currentNode, primaryPositions_, validNeighbors);
 
-  if (!wallOrOOB[0] || !wallOrOOB[1])
-    secondaryPositions.push_back(std::make_pair(-1, 1));  // NE
+  if (hugWalls_) {
+    if (!wallOrOOB[0] || !wallOrOOB[1])
+      secondaryPositions.push_back(std::make_pair(-1, 1));  // NE
 
-  if (!wallOrOOB[1] || !wallOrOOB[2])
-    secondaryPositions.push_back(std::make_pair(1, 1));  // SE
+    if (!wallOrOOB[1] || !wallOrOOB[2])
+      secondaryPositions.push_back(std::make_pair(1, 1));  // SE
 
-  if (!wallOrOOB[2] || !wallOrOOB[3])
-    secondaryPositions.push_back(std::make_pair(1, -1));  // SW
+    if (!wallOrOOB[2] || !wallOrOOB[3])
+      secondaryPositions.push_back(std::make_pair(1, -1));  // SW
 
-  if (!wallOrOOB[3] || !wallOrOOB[0])
-    secondaryPositions.push_back(std::make_pair(-1, -1));  // NW
+    if (!wallOrOOB[3] || !wallOrOOB[0])
+      secondaryPositions.push_back(std::make_pair(-1, -1));  // NW
+  } else {
+    if (!wallOrOOB[0] && !wallOrOOB[1])
+      secondaryPositions.push_back(std::make_pair(-1, 1));  // NE
+
+    if (!wallOrOOB[1] && !wallOrOOB[2])
+      secondaryPositions.push_back(std::make_pair(1, 1));  // SE
+
+    if (!wallOrOOB[2] && !wallOrOOB[3])
+      secondaryPositions.push_back(std::make_pair(1, -1));  // SW
+
+    if (!wallOrOOB[3] && !wallOrOOB[0])
+      secondaryPositions.push_back(std::make_pair(-1, -1));  // NW
+  }
 
   pushOnNeighborsList(currentNode, secondaryPositions, validNeighbors);
 }

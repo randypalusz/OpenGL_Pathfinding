@@ -21,8 +21,8 @@ struct hash_pair {
 class A_Star {
  public:
   // input to constructor will be the the desired search grid
-  explicit A_Star(std::vector<std::vector<char>> &input);
-  explicit A_Star(std::string path);
+  explicit A_Star(std::vector<std::vector<char>> &input, bool hugWalls = false);
+  explicit A_Star(std::string path, bool hugWalls = false);
   void calculateShortest();
   void printGrid();
 
@@ -36,7 +36,7 @@ class A_Star {
   void loadGridFromFile(const std::string fileName);
   void loadGridFromVector(const std::vector<std::vector<char>> &input);
   void backtrack(Node *);
-  void getNeighbors(std::vector<Node *> &validNeighbors, Node *);
+  void getNeighbors(std::vector<Node *> &validNeighbors, Node *currentNode);
   auto pushOnNeighborsList(Node *currentNode,
                            const std::vector<std::pair<int, int>> &referencePositions,
                            std::vector<Node *> &validNeighbors)
@@ -48,6 +48,7 @@ class A_Star {
   std::unordered_set<std::pair<int, int>, hash_pair> closeList_;
   Node *startNode_;
   Node *endNode_;
+  bool hugWalls_;
   std::vector<std::pair<int, int>> primaryPositions_{
       std::make_pair(-1, 0),  // N
       std::make_pair(0, 1),   // E
@@ -55,7 +56,7 @@ class A_Star {
       std::make_pair(0, -1)   // W
   };
   char wall_ = '#';
-  char valid_ = '.';
+  char valid_ = ' ';
 };
 
 using time_point = std::chrono::high_resolution_clock::time_point;

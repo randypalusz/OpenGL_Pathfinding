@@ -24,7 +24,7 @@ void sfmlTest() {
   }
 }
 
-auto createAStarFromGrid() -> A_Star {
+auto createAStarFromGrid(bool hugWalls) -> A_Star {
   std::vector<std::vector<char>> grid{};
   grid.push_back(
       std::vector<char>{'.', '#', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.'});
@@ -43,7 +43,7 @@ auto createAStarFromGrid() -> A_Star {
   return path;
 }
 
-auto createAStarFromFile() -> A_Star {
+auto createAStarFromFile(bool hugWalls) -> A_Star {
   A_Star path{"grid.txt"};
   return path;
 }
@@ -51,8 +51,8 @@ auto createAStarFromFile() -> A_Star {
 int main(int argc, char** argv) {
   sfmlTest();
   // A_Star path{"grid.txt"};
-  // auto path = createAStarFromGrid();
-  auto path = createAStarFromFile();
+  // auto path = createAStarFromGrid(true);
+  auto path = createAStarFromFile(false);
   path.printGrid();
   path.calculateShortest();
   path.printGrid();
