@@ -25,9 +25,7 @@ class A_Star {
   explicit A_Star(std::string path, bool hugWalls = false);
   // TODO: rename to calculateShortestPerformance, create wrapper function to call the
   // desired function based on an input
-  void calculateShortest();
-  // TODO: Implement this (create window, call update after certain time delta, etc..
-  void calculateShortestNcurses();
+  void calculateShortest(std::string visualizationMethod);
   void printGrid();
 
  private:
@@ -37,6 +35,9 @@ class A_Star {
   // e = end
   // p = shortest_path
   // updates shortest path on grid_
+  void calculateShortestPerf();
+  // TODO: Implement this (create window, call update after certain time delta, etc..
+  void calculateShortestNcurses();
   void loadGridFromFile(const std::string fileName);
   void loadGridFromVector(const std::vector<std::vector<char>> &input);
   void backtrack(Node *);

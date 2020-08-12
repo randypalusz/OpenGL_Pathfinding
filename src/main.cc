@@ -55,6 +55,6 @@ int main(int argc, char** argv) {
   // auto path = createAStarFromGrid(true);
   auto path = createAStarFromFile(false);
   path.printGrid();
-  path.calculateShortest();
+  path.calculateShortest("console");
   path.printGrid();
 }

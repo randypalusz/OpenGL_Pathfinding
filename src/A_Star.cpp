@@ -34,7 +34,18 @@ void A_Star::printGrid() {
   std::cout << std::endl;
 }
 
-void A_Star::calculateShortest() {
+void A_Star::calculateShortest(std::string visualizationMethod) {
+  if (visualizationMethod == "console") {
+    calculateShortestPerf();
+  } else if (visualizationMethod == "curses") {
+    // TODO: uncomment when defined
+    // calculateShortestNcurses();
+  } else {
+    calculateShortestPerf();
+  }
+}
+
+void A_Star::calculateShortestPerf() {
   auto start = std::chrono::high_resolution_clock::now();
   std::vector<Node*> validNeighbors;
   addToOpenList(startNode_);
