@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "A_Star.hpp"
+#include "Curses_Window.hpp"
 
 void sfmlTest() {
   sf::RenderWindow window(sf::VideoMode(200, 200), "SFML Window");
@@ -49,7 +50,7 @@ auto createAStarFromFile(bool hugWalls) -> A_Star {
 }
 
 int main(int argc, char** argv) {
-  sfmlTest();
+  // sfmlTest();
   // A_Star path{"grid.txt"};
   // auto path = createAStarFromGrid(true);
   auto path = createAStarFromFile(false);

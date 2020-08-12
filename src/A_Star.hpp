@@ -23,7 +23,11 @@ class A_Star {
   // input to constructor will be the the desired search grid
   explicit A_Star(std::vector<std::vector<char>> &input, bool hugWalls = false);
   explicit A_Star(std::string path, bool hugWalls = false);
+  // TODO: rename to calculateShortestPerformance, create wrapper function to call the
+  // desired function based on an input
   void calculateShortest();
+  // TODO: Implement this (create window, call update after certain time delta, etc..
+  void calculateShortestNcurses();
   void printGrid();
 
  private:

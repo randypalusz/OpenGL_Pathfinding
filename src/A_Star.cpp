@@ -34,7 +34,6 @@ void A_Star::printGrid() {
   std::cout << std::endl;
 }
 
-// TODO: rewrite using this: https://en.wikipedia.org/wiki/A*_search_algorithm
 void A_Star::calculateShortest() {
   auto start = std::chrono::high_resolution_clock::now();
   std::vector<Node*> validNeighbors;

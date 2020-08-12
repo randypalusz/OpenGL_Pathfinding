@@ -6,7 +6,7 @@ mkdir -p build/exe
 cd build/clang
 cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ../..
 make -j 16
-ctest --output-on-failure
+# ctest --output-on-failure
 
 # go to build/, make symlinks to executables in build/exe/*.cc
 cd ../

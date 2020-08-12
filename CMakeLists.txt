@@ -8,17 +8,20 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+
 #set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(Sources
   ${SRC_DIR}/A_Star.cpp
   ${SRC_DIR}/main.cc
+  ${SRC_DIR}/Curses_Window.cpp
 )
 
 set(Headers
   ${SRC_DIR}/A_Star.hpp
   ${SRC_DIR}/Node.hpp
+  ${SRC_DIR}/Curses_Window.hpp
 )
 
 set(PROJECT_NAME ${PROJECT_NAME}.cc)
@@ -35,6 +38,12 @@ if(NOT APPLE)
 endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
+
+# NCURSES
+find_package(Curses REQUIRED)
+set(CURSES_USE_NCURSES TRUE)
+include_directories(${CURSES_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES})
 
 # SFML
 # Install SFML via package manager
