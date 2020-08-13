@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "Node.hpp"
+#include "Curses_Window.hpp"
 
 struct hash_pair {
   template <class T1, class T2>
@@ -41,13 +42,16 @@ class A_Star {
   void loadGridFromFile(const std::string fileName);
   void loadGridFromVector(const std::vector<std::vector<char>> &input);
   void backtrack(Node *);
+  void backtrackNcurses(Node *);
   void getNeighbors(std::vector<Node *> &validNeighbors, Node *currentNode);
   auto pushOnNeighborsList(Node *currentNode,
                            const std::vector<std::pair<int, int>> &referencePositions,
                            std::vector<Node *> &validNeighbors)
       -> const std::vector<bool>;
   auto getDistance(Node *, Node *) const -> double;
-  void addToOpenList(Node *);
+  void addToOpenList(Node *, bool ncurses = false);
+  void eraseFromOpenList(std::vector<Node *>::iterator it);
+  void addToCloseList(Node *);
   std::vector<std::vector<char>> grid_;
   std::vector<Node *> openList_;
   std::unordered_set<std::pair<int, int>, hash_pair> closeList_;
@@ -62,9 +66,15 @@ class A_Star {
   };
   char wall_ = '#';
   char valid_ = ' ';
+  char start_ = 's';
+  char end_ = 'e';
+  char open_ = 'o';
+  char close_ = 'c';
+  char path_ = 'p';
 };
 
 using time_point = std::chrono::high_resolution_clock::time_point;
 void printSearchTime(time_point start, time_point end);
+// void threadWrapper(CursesWindow &w, std::vector<std::vector<char>> &grid);
 
 #endif

@@ -12,12 +12,16 @@ const int WALL_PAIR = 3;
 const int VALID_PAIR = 4;
 const int OPEN_PAIR = 5;
 const int CLOSED_PAIR = 6;
+const int PATH_PAIR = 7;
 
 class CursesWindow {
  public:
   explicit CursesWindow(const char startChar, const char endChar, const char wallChar,
-                        const char validChar, const char openChar, const char closedChar);
+                        const char validChar, const char openChar, const char closedChar,
+                        const char pathChar);
+  ~CursesWindow();
   void update(std::vector<std::vector<char>> &grid);
+  void end(bool pathFound, int gridHeight);
 
  private:
   void initWindow();
@@ -28,6 +32,7 @@ class CursesWindow {
   char validChar_;
   char openChar_;
   char closedChar_;
+  char pathChar_;
   std::unordered_map<char, int> charToPairMap;
 };
 

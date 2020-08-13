@@ -54,7 +54,6 @@ int main(int argc, char** argv) {
   // A_Star path{"grid.txt"};
   // auto path = createAStarFromGrid(true);
   auto path = createAStarFromFile(false);
-  path.printGrid();
-  path.calculateShortest("console");
-  path.printGrid();
+  // path.calculateShortest("console");
+  path.calculateShortest("curses");
 }

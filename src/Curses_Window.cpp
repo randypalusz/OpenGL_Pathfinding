@@ -6,21 +6,25 @@
 
 CursesWindow::CursesWindow(const char startChar, const char endChar, const char wallChar,
                            const char validChar, const char openChar,
-                           const char closedChar) {
+                           const char closedChar, const char pathChar) {
   startChar_ = startChar;
   endChar_ = endChar;
   wallChar_ = wallChar;
   validChar_ = validChar;
   openChar_ = openChar;
   closedChar_ = closedChar;
-  charToPairMap.insert({startChar, START_PAIR});
-  charToPairMap.insert({endChar, END_PAIR});
-  charToPairMap.insert({wallChar, WALL_PAIR});
-  charToPairMap.insert({validChar, VALID_PAIR});
-  charToPairMap.insert({openChar, OPEN_PAIR});
-  charToPairMap.insert({closedChar, CLOSED_PAIR});
+  pathChar_ = pathChar;
+  charToPairMap.insert({{startChar, START_PAIR},
+                        {endChar, END_PAIR},
+                        {wallChar, WALL_PAIR},
+                        {validChar, VALID_PAIR},
+                        {openChar, OPEN_PAIR},
+                        {closedChar, CLOSED_PAIR},
+                        {pathChar, PATH_PAIR}});
   initWindow();
 }
+
+CursesWindow::~CursesWindow() { endwin(); }
 
 void CursesWindow::initWindow() {
   initscr();
@@ -34,12 +38,13 @@ void CursesWindow::initWindow() {
 
 void CursesWindow::initColors() {
   start_color();
-  init_pair(START_PAIR, COLOR_GREEN, INHERIT_COLOR);
-  init_pair(END_PAIR, COLOR_YELLOW, INHERIT_COLOR);
+  init_pair(START_PAIR, COLOR_GREEN, COLOR_GREEN);
+  init_pair(END_PAIR, COLOR_YELLOW, COLOR_YELLOW);
   init_pair(WALL_PAIR, COLOR_BLUE, COLOR_BLUE);
   init_pair(VALID_PAIR, INHERIT_COLOR, INHERIT_COLOR);
   init_pair(OPEN_PAIR, COLOR_YELLOW, COLOR_YELLOW);
   init_pair(CLOSED_PAIR, COLOR_RED, COLOR_RED);
+  init_pair(PATH_PAIR, COLOR_WHITE, COLOR_WHITE);
 }
 
 void CursesWindow::update(std::vector<std::vector<char>>& grid) {
@@ -57,4 +62,19 @@ void CursesWindow::update(std::vector<std::vector<char>>& grid) {
     }
   }
   refresh();
+}
+
+void CursesWindow::end(bool pathFound, int gridHeight) {
+  if (pathFound) {
+    mvprintw(gridHeight + 3, 0, "%s", "Path Found!");
+  } else {
+    mvprintw(gridHeight + 3, 0, "%s", "Path Not Found... :(");
+  }
+  mvprintw(gridHeight + 4, 0, "%s", "Press 'x' to exit...");
+  while (true) {
+    int c = getch();
+    if (c == 'x') {
+      break;
+    }
+  }
 }
