@@ -1,12 +1,14 @@
 #include "Curses_Window.hpp"
 
 #include <ncurses.h>
+
 #include <iostream>
 #include <vector>
 
-CursesWindow::CursesWindow(const char startChar, const char endChar, const char wallChar,
-                           const char validChar, const char openChar,
-                           const char closedChar, const char pathChar) {
+CursesWindow::CursesWindow(const char startChar, const char endChar,
+                           const char wallChar, const char validChar,
+                           const char openChar, const char closedChar,
+                           const char pathChar) {
   startChar_ = startChar;
   endChar_ = endChar;
   wallChar_ = wallChar;
@@ -39,7 +41,7 @@ void CursesWindow::initWindow() {
 void CursesWindow::initColors() {
   start_color();
   init_pair(START_PAIR, COLOR_GREEN, COLOR_GREEN);
-  init_pair(END_PAIR, COLOR_YELLOW, COLOR_YELLOW);
+  init_pair(END_PAIR, COLOR_MAGENTA, COLOR_MAGENTA);
   init_pair(WALL_PAIR, COLOR_BLUE, COLOR_BLUE);
   init_pair(VALID_PAIR, INHERIT_COLOR, INHERIT_COLOR);
   init_pair(OPEN_PAIR, COLOR_YELLOW, COLOR_YELLOW);

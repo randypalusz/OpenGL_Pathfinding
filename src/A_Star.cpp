@@ -1,19 +1,18 @@
 #include "A_Star.hpp"
-#include "Curses_Window.hpp"
 
 #include <math.h>
 
 #include <algorithm>
 #include <chrono>
-#include <iostream>
-#include <utility>
-#include <vector>
 #include <filesystem>
 #include <fstream>
-#include <unordered_set>
+#include <iostream>
 #include <thread>
-#include <chrono>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
+#include "Curses_Window.hpp"
 #include "Node.hpp"
 
 A_Star::A_Star(std::vector<std::vector<char>>& inputGrid, bool hugWalls) {
@@ -41,7 +40,6 @@ void A_Star::calculateShortest(std::string visualizationMethod) {
   if (visualizationMethod == "console") {
     calculateShortestPerf();
   } else if (visualizationMethod == "curses") {
-    // TODO: uncomment when defined
     calculateShortestNcurses();
   } else {
     calculateShortestPerf();
@@ -201,23 +199,21 @@ void A_Star::loadGridFromFile(const std::string fileName) {
   loadGridFromVector(v);
 }
 
-void A_Star::loadGridFromVector(const std::vector<std::vector<char>>& inputGrid) {
+void A_Star::loadGridFromVector(
+    const std::vector<std::vector<char>>& inputGrid) {
   grid_ = inputGrid;
+  char currentChar;
   int startFound = 0;
   int endFound = 0;
   for (int row = 0; row < grid_.size(); row++) {
     for (int column = 0; column < grid_[0].size(); column++) {
-      switch (grid_[row][column]) {
-        case 's':
-          startNode_ = new Node(nullptr, std::make_pair(row, column));
-          startFound++;
-          break;
-        case 'e':
-          endNode_ = new Node(nullptr, std::make_pair(row, column));
-          endFound++;
-          break;
-        default:
-          break;
+      currentChar = grid_[row][column];
+      if (currentChar == start_) {
+        startNode_ = new Node(nullptr, std::make_pair(row, column));
+        startFound++;
+      } else if (currentChar == end_) {
+        endNode_ = new Node(nullptr, std::make_pair(row, column));
+        endFound++;
       }
     }
   }
@@ -249,12 +245,11 @@ void A_Star::backtrackNcurses(Node* currentNode) {
   return;
 }
 
-// TODO: wallOrOOB not always used - find a way to make this optional while maintaining
-// performance
-auto A_Star::pushOnNeighborsList(Node* currentNode,
-                                 const std::vector<std::pair<int, int>>& refPositions,
-                                 std::vector<Node*>& validNeighbors)
-    -> const std::vector<bool> {
+// TODO: wallOrOOB not always used - find a way to make this optional while
+// maintaining performance
+auto A_Star::pushOnNeighborsList(
+    Node* currentNode, const std::vector<std::pair<int, int>>& refPositions,
+    std::vector<Node*>& validNeighbors) -> const std::vector<bool> {
   // wallOrOutOfBounds             N     E     S     W
   std::vector<bool> wallOrOOB = {true, true, true, true};
   auto centerRow = currentNode->getPosition().first;
@@ -265,7 +260,8 @@ auto A_Star::pushOnNeighborsList(Node* currentNode,
     int itColumn = currentPos.second;
     int addedRelPos = itRow + itColumn;
 
-    bool outOfBounds = ((centerRow + itRow) < 0) || ((centerColumn + itColumn) < 0) ||
+    bool outOfBounds = ((centerRow + itRow) < 0) ||
+                       ((centerColumn + itColumn) < 0) ||
                        ((centerRow + itRow) >= grid_.size()) ||
                        ((centerColumn + itColumn) >= grid_[0].size());
     if (outOfBounds) {
@@ -284,10 +280,12 @@ auto A_Star::pushOnNeighborsList(Node* currentNode,
   return wallOrOOB;
 }
 
-void A_Star::getNeighbors(std::vector<Node*>& validNeighbors, Node* currentNode) {
+void A_Star::getNeighbors(std::vector<Node*>& validNeighbors,
+                          Node* currentNode) {
   validNeighbors.clear();
   std::vector<std::pair<int, int>> secondaryPositions;
-  auto wallOrOOB = pushOnNeighborsList(currentNode, primaryPositions_, validNeighbors);
+  auto wallOrOOB =
+      pushOnNeighborsList(currentNode, primaryPositions_, validNeighbors);
 
   if (hugWalls_) {
     if (!wallOrOOB[0] || !wallOrOOB[1])
@@ -331,6 +329,12 @@ void A_Star::addToOpenList(Node* node, bool ncurses) {
   openList_.insert(it, node);
   if (ncurses) {
     auto position = node->getPosition();
+    if (node->equalsNode(startNode_)) {
+      return;
+    }
+    if (node->equalsNode(endNode_)) {
+      return;
+    }
     grid_[position.first][position.second] = open_;
   }
   return;
@@ -352,13 +356,18 @@ void A_Star::addToCloseList(Node* node) {
   if (node->equalsNode(startNode_)) {
     return;
   }
+  if (node->equalsNode(endNode_)) {
+    return;
+  }
   grid_[position.first][position.second] = close_;
 }
 
 using time_point = std::chrono::high_resolution_clock::time_point;
 void printSearchTime(time_point start, time_point end) {
-  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-  std::cout << "Search Time: " << duration.count() << " microseconds" << std::endl;
+  auto duration =
+      std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+  std::cout << "Search Time: " << duration.count() << " microseconds"
+            << std::endl;
 }
 
 // void threadWrapper(CursesWindow& w, std::vector<std::vector<char>>& grid) {
