@@ -1,14 +1,14 @@
-#include "Curses_Window.hpp"
+#include "CursesVisualize.hpp"
 
 #include <ncurses.h>
 
 #include <iostream>
 #include <vector>
 
-CursesWindow::CursesWindow(const char startChar, const char endChar,
-                           const char wallChar, const char validChar,
-                           const char openChar, const char closedChar,
-                           const char pathChar) {
+CursesVisualize::CursesVisualize(const char startChar, const char endChar,
+                                 const char wallChar, const char validChar,
+                                 const char openChar, const char closedChar,
+                                 const char pathChar) {
   startChar_ = startChar;
   endChar_ = endChar;
   wallChar_ = wallChar;
@@ -26,9 +26,9 @@ CursesWindow::CursesWindow(const char startChar, const char endChar,
   initWindow();
 }
 
-CursesWindow::~CursesWindow() { endwin(); }
+CursesVisualize::~CursesVisualize() { endwin(); }
 
-void CursesWindow::initWindow() {
+void CursesVisualize::initWindow() {
   initscr();
   use_default_colors();
   initColors();
@@ -36,9 +36,10 @@ void CursesWindow::initWindow() {
   cbreak();
   timeout(0);
   keypad(stdscr, TRUE);
+  erase();
 }
 
-void CursesWindow::initColors() {
+void CursesVisualize::initColors() {
   start_color();
   init_pair(START_PAIR, COLOR_GREEN, COLOR_GREEN);
   init_pair(END_PAIR, COLOR_MAGENTA, COLOR_MAGENTA);
@@ -49,7 +50,7 @@ void CursesWindow::initColors() {
   init_pair(PATH_PAIR, COLOR_WHITE, COLOR_WHITE);
 }
 
-void CursesWindow::update(std::vector<std::vector<char>>& grid) {
+void CursesVisualize::update(std::vector<std::vector<char>>& grid) {
   char currentChar;
   int currentPair;
   int num_rows = grid.size();
@@ -66,7 +67,7 @@ void CursesWindow::update(std::vector<std::vector<char>>& grid) {
   refresh();
 }
 
-void CursesWindow::end(bool pathFound, int gridHeight) {
+void CursesVisualize::end(bool pathFound, int gridHeight) {
   if (pathFound) {
     mvprintw(gridHeight + 3, 0, "%s", "Path Found!");
   } else {

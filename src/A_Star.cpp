@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "Curses_Window.hpp"
+#include "CursesVisualize.hpp"
 #include "Node.hpp"
 
 A_Star::A_Star(std::vector<std::vector<char>>& inputGrid, bool hugWalls) {
@@ -111,7 +111,7 @@ void A_Star::calculateShortestPerf() {
 }
 
 void A_Star::calculateShortestNcurses() {
-  CursesWindow w{start_, end_, wall_, valid_, open_, close_, path_};
+  CursesVisualize w{start_, end_, wall_, valid_, open_, close_, path_};
   // std::thread updateThread{threadWrapper, w, grid_};
   // updateThread.detach();
 

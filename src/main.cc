@@ -5,7 +5,8 @@
 #include <vector>
 
 #include "A_Star.hpp"
-#include "Curses_Window.hpp"
+#include "CursesGenerateGrid.hpp"
+#include "CursesVisualize.hpp"
 
 // void sfmlTest() {
 // sf::RenderWindow window(sf::VideoMode(200, 200), "SFML Window");
@@ -52,6 +53,8 @@ int main(int argc, char** argv) {
   // sfmlTest();
   // A_Star path{"grid.txt"};
   // auto path = createAStarFromGrid(true);
+  CursesGenerateGrid a{};
+  a.run();
   auto path = createAStarFromFile(false);
   // path.calculateShortest("console");
   path.calculateShortest("curses");

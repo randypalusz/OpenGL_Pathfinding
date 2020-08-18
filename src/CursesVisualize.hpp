@@ -1,9 +1,10 @@
-#ifndef CURSES_WINDOW
-#define CURSES_WINDOW
+#ifndef CURSES_VISUALIZE_HPP
+#define CURSES_VISUALIZE_HPP
 
 #include <ncurses.h>
-#include <vector>
+
 #include <unordered_map>
+#include <vector>
 
 const int INHERIT_COLOR = -1;
 const int START_PAIR = 1;
@@ -14,12 +15,13 @@ const int OPEN_PAIR = 5;
 const int CLOSED_PAIR = 6;
 const int PATH_PAIR = 7;
 
-class CursesWindow {
+class CursesVisualize {
  public:
-  explicit CursesWindow(const char startChar, const char endChar, const char wallChar,
-                        const char validChar, const char openChar, const char closedChar,
-                        const char pathChar);
-  ~CursesWindow();
+  explicit CursesVisualize(const char startChar, const char endChar,
+                           const char wallChar, const char validChar,
+                           const char openChar, const char closedChar,
+                           const char pathChar);
+  ~CursesVisualize();
   void update(std::vector<std::vector<char>> &grid);
   void end(bool pathFound, int gridHeight);
 

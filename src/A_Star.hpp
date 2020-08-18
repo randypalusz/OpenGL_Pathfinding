@@ -7,7 +7,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "Curses_Window.hpp"
+#include "CursesVisualize.hpp"
 #include "Node.hpp"
 
 struct hash_pair {

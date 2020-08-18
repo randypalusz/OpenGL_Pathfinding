@@ -15,13 +15,15 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(Sources
   ${SRC_DIR}/A_Star.cpp
   ${SRC_DIR}/main.cc
-  ${SRC_DIR}/Curses_Window.cpp
+  ${SRC_DIR}/CursesVisualize.cpp
+  ${SRC_DIR}/CursesGenerateGrid.cpp
 )
 
 set(Headers
   ${SRC_DIR}/A_Star.hpp
   ${SRC_DIR}/Node.hpp
-  ${SRC_DIR}/Curses_Window.hpp
+  ${SRC_DIR}/CursesVisualize.hpp
+  ${SRC_DIR}/CursesGenerateGrid.hpp
 )
 
 set(PROJECT_NAME ${PROJECT_NAME}.cc)
