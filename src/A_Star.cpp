@@ -221,6 +221,7 @@ void A_Star::loadGridFromVector(
     std::cout << "Invalid number of start/end points..." << std::endl;
     exit(1);
   }
+  openList_.reserve(grid_.size() * grid_[0].size());
 }
 
 void A_Star::backtrack(Node* currentNode) {

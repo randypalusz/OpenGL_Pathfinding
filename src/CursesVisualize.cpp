@@ -34,6 +34,7 @@ void CursesVisualize::initWindow() {
   initColors();
   curs_set(0);
   cbreak();
+  noecho();
   timeout(0);
   keypad(stdscr, TRUE);
   erase();
