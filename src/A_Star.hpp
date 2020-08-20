@@ -28,12 +28,6 @@ class A_Star {
   void printGrid();
 
  private:
-  // 0 = ground
-  // w = wall
-  // s = start
-  // e = end
-  // p = shortest_path
-  // updates shortest path on grid_
   void calculateShortestPerf();
   void calculateShortestNcurses();
   void loadGridFromFile(const std::string fileName);
@@ -55,7 +49,7 @@ class A_Star {
   Node *startNode_;
   Node *endNode_;
   bool hugWalls_;
-  std::vector<std::pair<int, int>> primaryPositions_{
+  const std::vector<std::pair<int, int>> primaryPositions_{
       std::make_pair(-1, 0),  // N
       std::make_pair(0, 1),   // E
       std::make_pair(1, 0),   // S

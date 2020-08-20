@@ -112,8 +112,6 @@ void A_Star::calculateShortestPerf() {
 
 void A_Star::calculateShortestNcurses() {
   CursesVisualize w{start_, end_, wall_, valid_, open_, close_, path_};
-  // std::thread updateThread{threadWrapper, w, grid_};
-  // updateThread.detach();
 
   std::vector<Node*> validNeighbors;
   addToOpenList(startNode_);
@@ -122,7 +120,6 @@ void A_Star::calculateShortestNcurses() {
     w.update(grid_);
     auto currentNode = openList_[0];
     eraseFromOpenList(openList_.begin());
-    // closeList_.push_back(currentNode);
     addToCloseList(currentNode);
 
     if (currentNode->equalsNode(endNode_)) {
