@@ -19,7 +19,7 @@ CursesGenerateGrid::CursesGenerateGrid() {
     }
   }
 
-  currentState_ = CreateShape;
+  currentState_ = PlaceStart;
 
   charToPairMap.insert({{'s', START_PAIR},
                         {'e', END_PAIR},
@@ -56,10 +56,14 @@ auto CursesGenerateGrid::run() -> std::vector<std::vector<char>> {
     update();
     switch (currentState_) {
       case PlaceStart:
-        currentState_ = PlaceEnd;
+        if (placeMarker('s')) {
+          currentState_ = PlaceEnd;
+        }
         break;
       case PlaceEnd:
-        currentState_ = CreateShape;
+        if (placeMarker('e')) {
+          currentState_ = CreateShape;
+        }
         break;
       case CreateShape:
         if (createShape()) {
@@ -86,6 +90,67 @@ void CursesGenerateGrid::end() {
   endwin();
 }
 
+auto CursesGenerateGrid::placeMarker(char marker) -> bool {
+  if ((marker != 's') && (marker != 'e')) {
+    // if not s/e, bad marker
+    return false;
+  }
+  int keyIn;
+  // row/column is the position in the grid_
+  int row = 0;
+  int column = 0;
+  bool finalize = false;
+  bool updated = true;
+  auto update = [&](int widthIncrement, int heightIncrement) {
+    if ((column + widthIncrement >= width_) || (column + widthIncrement < 0)) {
+      return;
+    }
+    if ((row + heightIncrement >= height_) || (row + heightIncrement < 0)) {
+      return;
+    }
+    row += heightIncrement;
+    column += widthIncrement;
+    move(row + 1, column + 1);
+    refresh();
+  };
+
+  auto placeChar = [&]() {
+    if (grid_[row][column] == ' ') {
+      grid_[row][column] = marker;
+      finalize = true;
+    }
+  };
+
+  curs_set(1);
+  move(1, 1);
+  refresh();
+
+  while (!finalize) {
+    keyIn = getch();
+    switch (keyIn) {
+      case KEY_RIGHT:
+        update(1, 0);
+        break;
+      case KEY_LEFT:
+        update(-1, 0);
+        break;
+      case KEY_UP:
+        update(0, -1);
+        break;
+      case KEY_DOWN:
+        update(0, 1);
+        break;
+      case '\n':
+        // enter pressed, attempt to place marker at row/column
+        placeChar();
+        break;
+      default:
+        break;
+    }
+  }
+
+  return true;
+}
 auto CursesGenerateGrid::createShape() -> bool {
   int c;
   int shapeTopLeft = width_ + 10;
@@ -127,7 +192,7 @@ auto CursesGenerateGrid::createShape() -> bool {
       case KEY_DOWN:
         update(0, 1);
         break;
-      case KEY_ENTER:
+      case '\n':
         finalize = true;
         break;
       case 'x':

@@ -19,8 +19,7 @@ class CursesGenerateGrid {
   void initColors();
   // Returns false on exit condition
   auto createShape() -> bool;
-  void placeStart();
-  void placeEnd();
+  auto placeMarker(char) -> bool;
   void end();
   State currentState_;
   std::vector<std::vector<char>> grid_;
