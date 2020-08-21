@@ -41,8 +41,8 @@ void CursesGenerateGrid::initWindow() {
 
 void CursesGenerateGrid::initColors() {
   start_color();
-  init_pair(START_PAIR, COLOR_GREEN, COLOR_GREEN);
-  init_pair(END_PAIR, COLOR_MAGENTA, COLOR_MAGENTA);
+  init_pair(START_PAIR, COLOR_BLACK, COLOR_GREEN);
+  init_pair(END_PAIR, COLOR_BLACK, COLOR_MAGENTA);
   init_pair(POTENTIAL_WALL_PAIR, COLOR_BLACK, COLOR_CYAN);
   init_pair(WALL_PAIR, COLOR_BLUE, COLOR_BLUE);
   init_pair(VALID_PAIR, INHERIT_COLOR, INHERIT_COLOR);
