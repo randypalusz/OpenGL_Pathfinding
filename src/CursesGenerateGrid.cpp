@@ -3,6 +3,7 @@
 #include <ncurses.h>
 
 #include <iostream>
+#include <string>
 
 CursesGenerateGrid::CursesGenerateGrid() {
   std::cout << "Enter Grid Width: ";
@@ -98,13 +99,12 @@ auto CursesGenerateGrid::createShape() -> bool {
   // and increments the current shape width/height by the passed value
   auto update = [&](int widthIncrement, int heightIncrement) {
     if ((shapeWidth + widthIncrement > maxShapeWidth) ||
-        (shapeWidth + widthIncrement < 1) ||
-        (shapeWidth + widthIncrement > width_)) {
+        (shapeWidth + widthIncrement < 1) || (shapeWidth + widthIncrement >= width_)) {
       return;
     }
     if ((shapeHeight + heightIncrement > maxShapeHeight) ||
         (shapeHeight + heightIncrement < 1) ||
-        (shapeHeight + heightIncrement > height_)) {
+        (shapeHeight + heightIncrement >= height_)) {
       return;
     }
     shapeWidth += widthIncrement;
@@ -161,14 +161,27 @@ auto CursesGenerateGrid::createShape() -> bool {
 void CursesGenerateGrid::update() {
   char currentChar;
   int currentPair;
+  // draw wall width of grid+1 at top
+  std::string temp(width_ + 2, '#');
+  char* topBottomWall = &(temp[0]);
+  attron(COLOR_PAIR(WALL_PAIR));
+  mvprintw(0, 0, "%s", topBottomWall);
+  attroff(COLOR_PAIR(WALL_PAIR));
   for (int i = 0; i < height_; i++) {
+    attron(COLOR_PAIR(WALL_PAIR));
+    mvprintw(i + 1, 0, "%c", '#');
+    mvprintw(i + 1, width_ + 1, "%c", '#');
+    attroff(COLOR_PAIR(WALL_PAIR));
     for (int j = 0; j < width_; j++) {
       currentChar = grid_[i][j];
       currentPair = charToPairMap.at(currentChar);
       attron(COLOR_PAIR(currentPair));
-      mvprintw(i, j, "%c", currentChar);
+      mvprintw(i + 1, j + 1, "%c", currentChar);
       attroff(COLOR_PAIR(currentPair));
     }
   }
+  attron(COLOR_PAIR(WALL_PAIR));
+  mvprintw(height_ + 1, 0, "%s", topBottomWall);
+  attroff(COLOR_PAIR(WALL_PAIR));
   refresh();
 }
