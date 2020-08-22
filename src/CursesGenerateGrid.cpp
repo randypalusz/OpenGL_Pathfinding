@@ -164,7 +164,8 @@ auto CursesGenerateGrid::createShape() -> bool {
   // and increments the current shape width/height by the passed value
   auto update = [&](int widthIncrement, int heightIncrement) {
     if ((shapeWidth + widthIncrement > maxShapeWidth) ||
-        (shapeWidth + widthIncrement < 1) || (shapeWidth + widthIncrement >= width_)) {
+        (shapeWidth + widthIncrement < 1) ||
+        (shapeWidth + widthIncrement >= width_)) {
       return;
     }
     if ((shapeHeight + heightIncrement > maxShapeHeight) ||
@@ -176,8 +177,9 @@ auto CursesGenerateGrid::createShape() -> bool {
     shapeHeight += heightIncrement;
     updated = true;
   };
+  curs_set(0);
   mvprintw(0, width_ + 3, "%s", "Shape: ");
-  while (true) {
+  while (!finalize) {
     c = getch();
     switch (c) {
       case KEY_RIGHT:
@@ -217,10 +219,8 @@ auto CursesGenerateGrid::createShape() -> bool {
       }
       updated = false;
     }
-    if (finalize) {
-      return true;
-    }
   }
+  return true;
 }
 
 void CursesGenerateGrid::update() {
