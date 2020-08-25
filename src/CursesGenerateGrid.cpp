@@ -49,6 +49,7 @@ void CursesGenerateGrid::initColors() {
 }
 
 auto CursesGenerateGrid::run() -> std::vector<std::vector<char>> {
+  ShapeReturn data;
   initWindow();
   while (currentState_ != Exit) {
     // clears the screen (any leftover potential walls/shapes)
@@ -66,13 +67,15 @@ auto CursesGenerateGrid::run() -> std::vector<std::vector<char>> {
         }
         break;
       case CreateShape:
-        if (createShape()) {
+        data = createShape();
+        if (data.placeShape) {
           currentState_ = PlaceShape;
         } else {
           currentState_ = Exit;
         }
         break;
       case PlaceShape:
+        placeShape(data.shapeWidth, data.shapeHeight);
         currentState_ = CreateShape;
         break;
       case Exit:
@@ -110,7 +113,7 @@ auto CursesGenerateGrid::placeMarker(char marker) -> bool {
     }
     row += heightIncrement;
     column += widthIncrement;
-    move(row + 1, column + 1);
+    move(row + gridTopLeftRow_, column + gridTopLeftColumn_);
     refresh();
   };
 
@@ -122,7 +125,7 @@ auto CursesGenerateGrid::placeMarker(char marker) -> bool {
   };
 
   curs_set(1);
-  move(1, 1);
+  move(gridTopLeftRow_, gridTopLeftColumn_);
   refresh();
 
   while (!finalize) {
@@ -151,13 +154,14 @@ auto CursesGenerateGrid::placeMarker(char marker) -> bool {
 
   return true;
 }
-auto CursesGenerateGrid::createShape() -> bool {
+
+auto CursesGenerateGrid::createShape() -> ShapeReturn {
   int c;
   int shapeTopLeft = width_ + 10;
   int shapeWidth = 1;
   int shapeHeight = 1;
-  int maxShapeWidth = 20;
-  int maxShapeHeight = 20;
+  int maxShapeWidth = 30;
+  int maxShapeHeight = 30;
   bool finalize = false;
   bool updated = true;
   // update takes in width/height increment based on the key press
@@ -198,7 +202,7 @@ auto CursesGenerateGrid::createShape() -> bool {
         finalize = true;
         break;
       case 'x':
-        return false;
+        return ShapeReturn{false, -1, -1};
       default:
         break;
     }
@@ -220,8 +224,10 @@ auto CursesGenerateGrid::createShape() -> bool {
       updated = false;
     }
   }
-  return true;
+  return ShapeReturn{true, shapeWidth, shapeHeight};
 }
+
+void CursesGenerateGrid::placeShape(int shapeWidth, int shapeHeight) { return; }
 
 void CursesGenerateGrid::update() {
   char currentChar;

@@ -4,9 +4,17 @@
 #include <unordered_map>
 #include <vector>
 
-enum State { CreateShape, PlaceShape, PlaceStart, PlaceEnd, Exit };
-
 class CursesGenerateGrid {
+  enum State { CreateShape, PlaceShape, PlaceStart, PlaceEnd, Exit };
+
+  // placeShape set to false means to ignore the other two parameters, go to the
+  // Exit state
+  struct ShapeReturn {
+    bool placeShape;
+    int shapeWidth;
+    int shapeHeight;
+  };
+
  public:
   CursesGenerateGrid();
   // main state machine for application
@@ -17,14 +25,17 @@ class CursesGenerateGrid {
   void update();
   void initWindow();
   void initColors();
-  // Returns false on exit condition
-  auto createShape() -> bool;
+  auto createShape() -> ShapeReturn;
+  // TODO: implement placeShape
+  void placeShape(int shapeWidth, int shapeHeight);
   auto placeMarker(char) -> bool;
   void end();
   State currentState_;
   std::vector<std::vector<char>> grid_;
   int height_;
   int width_;
+  const int gridTopLeftRow_ = 1;
+  const int gridTopLeftColumn_ = 1;
   std::unordered_map<char, int> charToPairMap;
   const int INHERIT_COLOR = -1;
   const int START_PAIR = 1;
