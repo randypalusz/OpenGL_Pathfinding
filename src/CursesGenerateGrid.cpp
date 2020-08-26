@@ -2,6 +2,7 @@
 
 #include <ncurses.h>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 
@@ -168,8 +169,7 @@ auto CursesGenerateGrid::createShape() -> ShapeReturn {
   // and increments the current shape width/height by the passed value
   auto update = [&](int widthIncrement, int heightIncrement) {
     if ((shapeWidth + widthIncrement > maxShapeWidth) ||
-        (shapeWidth + widthIncrement < 1) ||
-        (shapeWidth + widthIncrement >= width_)) {
+        (shapeWidth + widthIncrement < 1) || (shapeWidth + widthIncrement >= width_)) {
       return;
     }
     if ((shapeHeight + heightIncrement > maxShapeHeight) ||
@@ -227,7 +227,101 @@ auto CursesGenerateGrid::createShape() -> ShapeReturn {
   return ShapeReturn{true, shapeWidth, shapeHeight};
 }
 
-void CursesGenerateGrid::placeShape(int shapeWidth, int shapeHeight) { return; }
+void CursesGenerateGrid::placeShape(int shapeWidth, int shapeHeight) {
+  int c;
+  // keep track of position by topLeft corner
+  int topLeftRow = 0;
+  int topLeftColumn = 0;
+  bool updated = false;
+  bool finalize = false;
+
+  // lambda to update the position of the walls to be placed
+  auto updatePosition = [&](int widthIncrement, int heightIncrement) {
+    // return if shape would not be visible at all on screen
+    // at minimum, a single corner of the wall should be shown
+    if ((topLeftColumn + shapeWidth + widthIncrement < gridTopLeftColumn_) ||
+        (topLeftColumn + widthIncrement >= (width_ - 1) + gridTopLeftColumn_) ||
+        (topLeftRow + shapeHeight + heightIncrement < gridTopLeftRow_) ||
+        (topLeftRow + heightIncrement >= (height_ - 1) + gridTopLeftRow_)) {
+      return;
+    }
+
+    topLeftColumn += widthIncrement;
+    topLeftRow += heightIncrement;
+    updated = true;
+  };
+
+  // lambda to show a preview of the walls to be placed
+  auto preview = [&]() {
+    int startRow = std::max(0, topLeftRow);
+    int startColumn = std::max(0, topLeftColumn);
+    int endRow = std::min(height_, topLeftRow + shapeHeight);
+    int endColumn = std::min(width_, topLeftColumn + shapeWidth);
+    // update to restore the grid to its actual state
+    update();
+    // draw preview walls over the grid
+    for (int i = startRow; i < endRow; i++) {
+      for (int j = startColumn; j < endColumn; j++) {
+        if ((grid_[i][j] == 's') || (grid_[i][j] == 'e')) {
+          continue;
+        }
+        attron(COLOR_PAIR(charToPairMap.at('?')));
+        mvprintw(i + gridTopLeftRow_, j + gridTopLeftColumn_, "%c", '?');
+        attroff(COLOR_PAIR(charToPairMap.at('?')));
+      }
+    }
+    updated = false;
+  };
+
+  // lambda to update the grid_[][] with the walls
+  auto place = [&]() {
+    for (int i = topLeftRow; i < topLeftRow + shapeHeight; i++) {
+      for (int j = topLeftColumn; j < topLeftColumn + shapeWidth; j++) {
+        if ((i < 0) || (i >= height_) || (j < 0) || (j >= width_)) {
+          continue;
+        }
+        if ((grid_[i][j] == 's') || (grid_[i][j] == 'e')) {
+          continue;
+        }
+        grid_[i][j] = '#';
+      }
+    }
+    finalize = true;
+  };
+
+  curs_set(0);
+  preview();
+
+  while (!finalize) {
+    c = getch();
+    switch (c) {
+      case KEY_RIGHT:
+        updatePosition(1, 0);
+        break;
+      case KEY_LEFT:
+        updatePosition(-1, 0);
+        break;
+      case KEY_UP:
+        updatePosition(0, -1);
+        break;
+      case KEY_DOWN:
+        updatePosition(0, 1);
+        break;
+      case '\n':
+        place();
+        break;
+      // cancel placement
+      case 'x':
+        finalize = true;
+        break;
+      default:
+        break;
+    }
+    if (updated) {
+      preview();
+    }
+  }
+}
 
 void CursesGenerateGrid::update() {
   char currentChar;
