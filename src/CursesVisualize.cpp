@@ -67,7 +67,7 @@ void CursesVisualize::update(std::vector<std::vector<char>>& grid) {
       currentChar = grid[i][j];
       currentPair = charToPairMap.at(currentChar);
       attron(COLOR_PAIR(currentPair));
-      mvprintw(i + 1, j + 1, "%c", currentChar);
+      mvprintw(i + gridTopLeftRow_, j + gridTopLeftColumn_, "%c", currentChar);
       attroff(COLOR_PAIR(currentPair));
     }
   }

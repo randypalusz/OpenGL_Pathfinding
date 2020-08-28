@@ -86,6 +86,7 @@ auto CursesGenerateGrid::run() -> std::vector<std::vector<char>> {
         break;
     }
   }
+  endwin();
   return grid_;
 }
 
