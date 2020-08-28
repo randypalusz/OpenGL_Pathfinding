@@ -27,18 +27,18 @@
 
 auto createAStarFromGrid(bool hugWalls) -> A_Star {
   std::vector<std::vector<char>> grid{};
-  grid.push_back(std::vector<char>{'.', '#', '.', '.', '.', '.', '.', '#', '.',
-                                   '.', '.', '.'});
-  grid.push_back(std::vector<char>{'.', '.', '.', '#', '#', '.', '.', '#', '.',
-                                   '.', '#', '.'});
-  grid.push_back(std::vector<char>{'.', '.', '#', '#', '.', '.', '.', '.', '.',
-                                   '.', '#', 's'});
-  grid.push_back(std::vector<char>{'e', '#', '.', '#', '.', '.', '.', '#', '.',
-                                   '.', '#', '.'});
-  grid.push_back(std::vector<char>{'.', '.', '.', '.', '.', '.', '#', '#', '.',
-                                   '.', '.', '.'});
-  grid.push_back(std::vector<char>{'.', '#', '.', '.', '.', '.', '#', '.', '.',
-                                   '.', '.', '.'});
+  grid.push_back(
+      std::vector<char>{'.', '#', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.'});
+  grid.push_back(
+      std::vector<char>{'.', '.', '.', '#', '#', '.', '.', '#', '.', '.', '#', '.'});
+  grid.push_back(
+      std::vector<char>{'.', '.', '#', '#', '.', '.', '.', '.', '.', '.', '#', 's'});
+  grid.push_back(
+      std::vector<char>{'e', '#', '.', '#', '.', '.', '.', '#', '.', '.', '#', '.'});
+  grid.push_back(
+      std::vector<char>{'.', '.', '.', '.', '.', '.', '#', '#', '.', '.', '.', '.'});
+  grid.push_back(
+      std::vector<char>{'.', '#', '.', '.', '.', '.', '#', '.', '.', '.', '.', '.'});
 
   A_Star path{grid};
   return path;
@@ -54,8 +54,9 @@ int main(int argc, char** argv) {
   // A_Star path{"grid.txt"};
   // auto path = createAStarFromGrid(true);
   CursesGenerateGrid a{};
-  a.run();
-  auto path = createAStarFromFile(false);
+  auto grid = a.run();
+  A_Star path{grid};
+  // auto path = createAStarFromFile(false);
   // path.calculateShortest("console");
   path.calculateShortest("curses");
 }

@@ -35,10 +35,10 @@ class A_Star {
   void backtrack(Node *);
   void backtrackNcurses(Node *);
   void getNeighbors(std::vector<Node *> &validNeighbors, Node *currentNode);
-  auto pushOnNeighborsList(
-      Node *currentNode,
-      const std::vector<std::pair<int, int>> &referencePositions,
-      std::vector<Node *> &validNeighbors) -> const std::vector<bool>;
+  auto pushOnNeighborsList(Node *currentNode,
+                           const std::vector<std::pair<int, int>> &referencePositions,
+                           std::vector<Node *> &validNeighbors)
+      -> const std::vector<bool>;
   auto getDistance(Node *, Node *) const -> double;
   void addToOpenList(Node *, bool ncurses = false);
   void eraseFromOpenList(std::vector<Node *>::iterator it);
@@ -62,6 +62,8 @@ class A_Star {
   char open_ = 'o';
   char close_ = 'c';
   char path_ = 'p';
+  int height_;
+  int width_;
 };
 
 using time_point = std::chrono::high_resolution_clock::time_point;

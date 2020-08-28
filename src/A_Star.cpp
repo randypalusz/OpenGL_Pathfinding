@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "CharStruct.hpp"
 #include "CursesVisualize.hpp"
 #include "Node.hpp"
 
@@ -111,7 +112,8 @@ void A_Star::calculateShortestPerf() {
 }
 
 void A_Star::calculateShortestNcurses() {
-  CursesVisualize w{start_, end_, wall_, valid_, open_, close_, path_};
+  CharStruct charStruct{start_, end_, wall_, valid_, open_, close_, path_};
+  CursesVisualize w{charStruct, height_, width_};
 
   std::vector<Node*> validNeighbors;
   addToOpenList(startNode_);
@@ -196,8 +198,7 @@ void A_Star::loadGridFromFile(const std::string fileName) {
   loadGridFromVector(v);
 }
 
-void A_Star::loadGridFromVector(
-    const std::vector<std::vector<char>>& inputGrid) {
+void A_Star::loadGridFromVector(const std::vector<std::vector<char>>& inputGrid) {
   grid_ = inputGrid;
   char currentChar;
   int startFound = 0;
@@ -219,6 +220,8 @@ void A_Star::loadGridFromVector(
     exit(1);
   }
   openList_.reserve(grid_.size() * grid_[0].size());
+  height_ = grid_.size();
+  width_ = grid_[0].size();
 }
 
 void A_Star::backtrack(Node* currentNode) {
@@ -245,9 +248,10 @@ void A_Star::backtrackNcurses(Node* currentNode) {
 
 // TODO: wallOrOOB not always used - find a way to make this optional while
 // maintaining performance
-auto A_Star::pushOnNeighborsList(
-    Node* currentNode, const std::vector<std::pair<int, int>>& refPositions,
-    std::vector<Node*>& validNeighbors) -> const std::vector<bool> {
+auto A_Star::pushOnNeighborsList(Node* currentNode,
+                                 const std::vector<std::pair<int, int>>& refPositions,
+                                 std::vector<Node*>& validNeighbors)
+    -> const std::vector<bool> {
   // wallOrOutOfBounds             N     E     S     W
   std::vector<bool> wallOrOOB = {true, true, true, true};
   auto centerRow = currentNode->getPosition().first;
@@ -258,8 +262,7 @@ auto A_Star::pushOnNeighborsList(
     int itColumn = currentPos.second;
     int addedRelPos = itRow + itColumn;
 
-    bool outOfBounds = ((centerRow + itRow) < 0) ||
-                       ((centerColumn + itColumn) < 0) ||
+    bool outOfBounds = ((centerRow + itRow) < 0) || ((centerColumn + itColumn) < 0) ||
                        ((centerRow + itRow) >= grid_.size()) ||
                        ((centerColumn + itColumn) >= grid_[0].size());
     if (outOfBounds) {
@@ -278,12 +281,10 @@ auto A_Star::pushOnNeighborsList(
   return wallOrOOB;
 }
 
-void A_Star::getNeighbors(std::vector<Node*>& validNeighbors,
-                          Node* currentNode) {
+void A_Star::getNeighbors(std::vector<Node*>& validNeighbors, Node* currentNode) {
   validNeighbors.clear();
   std::vector<std::pair<int, int>> secondaryPositions;
-  auto wallOrOOB =
-      pushOnNeighborsList(currentNode, primaryPositions_, validNeighbors);
+  auto wallOrOOB = pushOnNeighborsList(currentNode, primaryPositions_, validNeighbors);
 
   if (hugWalls_) {
     if (!wallOrOOB[0] || !wallOrOOB[1])
@@ -362,10 +363,8 @@ void A_Star::addToCloseList(Node* node) {
 
 using time_point = std::chrono::high_resolution_clock::time_point;
 void printSearchTime(time_point start, time_point end) {
-  auto duration =
-      std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-  std::cout << "Search Time: " << duration.count() << " microseconds"
-            << std::endl;
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+  std::cout << "Search Time: " << duration.count() << " microseconds" << std::endl;
 }
 
 // void threadWrapper(CursesWindow& w, std::vector<std::vector<char>>& grid) {

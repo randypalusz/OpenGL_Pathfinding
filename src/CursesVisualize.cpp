@@ -1,29 +1,21 @@
 #include "CursesVisualize.hpp"
 
 #include <ncurses.h>
+#include "CharStruct.hpp"
 
 #include <iostream>
 #include <vector>
 
-CursesVisualize::CursesVisualize(const char startChar, const char endChar,
-                                 const char wallChar, const char validChar,
-                                 const char openChar, const char closedChar,
-                                 const char pathChar) {
-  startChar_ = startChar;
-  endChar_ = endChar;
-  wallChar_ = wallChar;
-  validChar_ = validChar;
-  openChar_ = openChar;
-  closedChar_ = closedChar;
-  pathChar_ = pathChar;
-  charToPairMap.insert({{startChar, START_PAIR},
-                        {endChar, END_PAIR},
-                        {wallChar, WALL_PAIR},
-                        {validChar, VALID_PAIR},
-                        {openChar, OPEN_PAIR},
-                        {closedChar, CLOSED_PAIR},
-                        {pathChar, PATH_PAIR}});
+CursesVisualize::CursesVisualize(CharStruct chars, int height, int width) {
+  charToPairMap.insert({{chars.start, START_PAIR},
+                        {chars.end, END_PAIR},
+                        {chars.wall, WALL_PAIR},
+                        {chars.valid, VALID_PAIR},
+                        {chars.open, OPEN_PAIR},
+                        {chars.close, CLOSED_PAIR},
+                        {chars.path, PATH_PAIR}});
   initWindow();
+  drawBorder(height, width);
 }
 
 CursesVisualize::~CursesVisualize() { endwin(); }
@@ -51,6 +43,20 @@ void CursesVisualize::initColors() {
   init_pair(PATH_PAIR, COLOR_WHITE, COLOR_WHITE);
 }
 
+void CursesVisualize::drawBorder(int height, int width) {
+  // draw wall width of grid+1 at top
+  std::string temp(width + 2, '#');
+  char* topBottomWall = &(temp[0]);
+  attron(COLOR_PAIR(WALL_PAIR));
+  mvprintw(0, 0, "%s", topBottomWall);
+  mvprintw(height + 1, 0, "%s", topBottomWall);
+  for (int i = 0; i < height; i++) {
+    mvprintw(i + 1, 0, "%c", '#');
+    mvprintw(i + 1, width + 1, "%c", '#');
+  }
+  attroff(COLOR_PAIR(WALL_PAIR));
+}
+
 void CursesVisualize::update(std::vector<std::vector<char>>& grid) {
   char currentChar;
   int currentPair;
@@ -61,7 +67,7 @@ void CursesVisualize::update(std::vector<std::vector<char>>& grid) {
       currentChar = grid[i][j];
       currentPair = charToPairMap.at(currentChar);
       attron(COLOR_PAIR(currentPair));
-      mvprintw(i, j, "%c", currentChar);
+      mvprintw(i + 1, j + 1, "%c", currentChar);
       attroff(COLOR_PAIR(currentPair));
     }
   }

@@ -2,16 +2,14 @@
 #define CURSES_VISUALIZE_HPP
 
 #include <ncurses.h>
+#include "CharStruct.hpp"
 
 #include <unordered_map>
 #include <vector>
 
 class CursesVisualize {
  public:
-  explicit CursesVisualize(const char startChar, const char endChar,
-                           const char wallChar, const char validChar,
-                           const char openChar, const char closedChar,
-                           const char pathChar);
+  explicit CursesVisualize(CharStruct, int height, int width);
   ~CursesVisualize();
   void update(std::vector<std::vector<char>> &grid);
   void end(bool pathFound, int gridHeight);
@@ -19,14 +17,11 @@ class CursesVisualize {
  private:
   void initWindow();
   void initColors();
-  char startChar_;
-  char endChar_;
-  char wallChar_;
-  char validChar_;
-  char openChar_;
-  char closedChar_;
-  char pathChar_;
+  void drawBorder(int height, int width);
+  CharStruct chars;
   std::unordered_map<char, int> charToPairMap;
+  const int gridTopLeftRow_ = 1;
+  const int gridTopLeftColumn_ = 1;
   const int INHERIT_COLOR = -1;
   const int START_PAIR = 1;
   const int END_PAIR = 2;

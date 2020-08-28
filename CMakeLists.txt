@@ -24,6 +24,7 @@ set(Headers
   ${SRC_DIR}/Node.hpp
   ${SRC_DIR}/CursesVisualize.hpp
   ${SRC_DIR}/CursesGenerateGrid.hpp
+  ${SRC_DIR}/CharStruct.hpp
 )
 
 set(PROJECT_NAME ${PROJECT_NAME}.cc)
