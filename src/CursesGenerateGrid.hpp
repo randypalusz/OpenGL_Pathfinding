@@ -4,8 +4,17 @@
 #include <unordered_map>
 #include <vector>
 
+#include "GenReturnStruct.hpp"
+
 class CursesGenerateGrid {
-  enum State { CreateShape, PlaceShape, PlaceStart, PlaceEnd, Exit };
+  enum State {
+    CreateShape,
+    PlaceShape,
+    PlaceStart,
+    PlaceEnd,
+    ChooseVisualization,
+    Exit
+  };
 
   // placeShape set to false means to ignore the other two parameters, go to the
   // Exit state
@@ -19,7 +28,7 @@ class CursesGenerateGrid {
   CursesGenerateGrid();
   // main state machine for application
   // returns created grid
-  auto run() -> std::vector<std::vector<char>>;
+  auto run() -> GenReturnStruct;
 
  private:
   void update();

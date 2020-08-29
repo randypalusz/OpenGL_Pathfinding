@@ -2,10 +2,11 @@
 #define CURSES_VISUALIZE_HPP
 
 #include <ncurses.h>
-#include "CharStruct.hpp"
 
 #include <unordered_map>
 #include <vector>
+
+#include "CharStruct.hpp"
 
 class CursesVisualize {
  public:

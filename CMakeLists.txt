@@ -25,6 +25,7 @@ set(Headers
   ${SRC_DIR}/CursesVisualize.hpp
   ${SRC_DIR}/CursesGenerateGrid.hpp
   ${SRC_DIR}/CharStruct.hpp
+  ${SRC_DIR}/GenReturnStruct.hpp
 )
 
 set(PROJECT_NAME ${PROJECT_NAME}.cc)

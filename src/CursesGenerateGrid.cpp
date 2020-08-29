@@ -60,7 +60,7 @@ void CursesGenerateGrid::initColors() {
   init_pair(HELP_PAIR, COLOR_BLACK, COLOR_YELLOW);
 }
 
-auto CursesGenerateGrid::run() -> std::vector<std::vector<char>> {
+auto CursesGenerateGrid::run() -> GenReturnStruct {
   ShapeReturn data;
   initWindow();
   while (currentState_ != Exit) {
@@ -83,12 +83,17 @@ auto CursesGenerateGrid::run() -> std::vector<std::vector<char>> {
         if (data.placeShape) {
           currentState_ = PlaceShape;
         } else {
-          currentState_ = Exit;
+          currentState_ = ChooseVisualization;
         }
         break;
       case PlaceShape:
         placeShape(data.shapeWidth, data.shapeHeight);
         currentState_ = CreateShape;
+        break;
+      case ChooseVisualization:
+        // TODO: Function to ask user which visualization method to use
+        // chooseVisualization();
+        currentState_ = Exit;
         break;
       case Exit:
         end();
@@ -97,8 +102,10 @@ auto CursesGenerateGrid::run() -> std::vector<std::vector<char>> {
         break;
     }
   }
-  endwin();
-  return grid_;
+  end();
+  // TODO: Paramaterize the second argument once
+  //       chooseVisualization is implemented
+  return GenReturnStruct{grid_, "curses"};
 }
 
 void CursesGenerateGrid::end() {
