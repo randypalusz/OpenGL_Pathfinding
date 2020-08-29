@@ -43,6 +43,7 @@ class CursesGenerateGrid {
   const int POTENTIAL_WALL_PAIR = 3;
   const int WALL_PAIR = 4;
   const int VALID_PAIR = 5;
+  const int HELP_PAIR = 6;
 };
 
 #endif

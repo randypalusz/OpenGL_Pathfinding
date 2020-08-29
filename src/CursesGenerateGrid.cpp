@@ -7,11 +7,21 @@
 #include <string>
 
 CursesGenerateGrid::CursesGenerateGrid() {
+  int tempWidth;
+  int tempHeight;
   std::cout << "Enter Grid Width: ";
-  std::cin >> width_;
+  std::cin >> tempWidth;
   std::cout << std::endl << "Enter Grid Height: ";
-  std::cin >> height_;
+  std::cin >> tempHeight;
   std::cout << std::endl;
+  if (tempWidth > 60) {
+    tempWidth = 60;
+  }
+  if (tempHeight > 60) {
+    tempHeight = 60;
+  }
+  width_ = tempWidth;
+  height_ = tempHeight;
 
   for (int i = 0; i < height_; i++) {
     grid_.push_back(std::vector<char>{});
@@ -47,6 +57,7 @@ void CursesGenerateGrid::initColors() {
   init_pair(POTENTIAL_WALL_PAIR, COLOR_BLACK, COLOR_CYAN);
   init_pair(WALL_PAIR, COLOR_BLUE, COLOR_BLUE);
   init_pair(VALID_PAIR, INHERIT_COLOR, INHERIT_COLOR);
+  init_pair(HELP_PAIR, COLOR_BLACK, COLOR_YELLOW);
 }
 
 auto CursesGenerateGrid::run() -> std::vector<std::vector<char>> {
@@ -104,6 +115,7 @@ auto CursesGenerateGrid::placeMarker(char marker) -> bool {
   // row/column is the position in the grid_
   int row = 0;
   int column = 0;
+  std::string markerString;
   bool finalize = false;
   bool updated = true;
   auto update = [&](int widthIncrement, int heightIncrement) {
@@ -125,6 +137,24 @@ auto CursesGenerateGrid::placeMarker(char marker) -> bool {
       finalize = true;
     }
   };
+
+  switch (marker) {
+    case ('s'):
+      markerString = "Placing Start...";
+      break;
+    case ('e'):
+      markerString = "Placing End...";
+      break;
+    default:
+      markerString = "Undefined";
+      break;
+  }
+  mvprintw(LINES - 1, 0, "%s", &(markerString[0]));
+  mvprintw(LINES - 2, 0, "%s", "Arrow Keys to Move");
+  mvprintw(LINES - 3, 0, "%s", "Enter to Place");
+  attron(COLOR_PAIR(HELP_PAIR));
+  mvprintw(LINES - 4, 0, "%s", "==========HELP==========");
+  attroff(COLOR_PAIR(HELP_PAIR));
 
   curs_set(1);
   move(gridTopLeftRow_, gridTopLeftColumn_);
@@ -170,7 +200,8 @@ auto CursesGenerateGrid::createShape() -> ShapeReturn {
   // and increments the current shape width/height by the passed value
   auto update = [&](int widthIncrement, int heightIncrement) {
     if ((shapeWidth + widthIncrement > maxShapeWidth) ||
-        (shapeWidth + widthIncrement < 1) || (shapeWidth + widthIncrement >= width_)) {
+        (shapeWidth + widthIncrement < 1) ||
+        (shapeWidth + widthIncrement >= width_)) {
       return;
     }
     if ((shapeHeight + heightIncrement > maxShapeHeight) ||
@@ -182,8 +213,16 @@ auto CursesGenerateGrid::createShape() -> ShapeReturn {
     shapeHeight += heightIncrement;
     updated = true;
   };
+
   curs_set(0);
   mvprintw(0, width_ + 3, "%s", "Shape: ");
+  mvprintw(LINES - 1, 0, "%s", "Arrow Keys - Modify Shape");
+  mvprintw(LINES - 2, 0, "%s", "Enter to Place Shape");
+  mvprintw(LINES - 3, 0, "%s", "'x' to Finalize Grid");
+  attron(COLOR_PAIR(HELP_PAIR));
+  mvprintw(LINES - 4, 0, "%s", "==========HELP==========");
+  attroff(COLOR_PAIR(HELP_PAIR));
+
   while (!finalize) {
     c = getch();
     switch (c) {
@@ -289,6 +328,13 @@ void CursesGenerateGrid::placeShape(int shapeWidth, int shapeHeight) {
     }
     finalize = true;
   };
+
+  mvprintw(LINES - 1, 0, "%s", "Arrow Keys to Move Preview");
+  mvprintw(LINES - 2, 0, "%s", "Enter to Finalize Shape");
+  mvprintw(LINES - 3, 0, "%s", "'x' to Cancel Placement");
+  attron(COLOR_PAIR(HELP_PAIR));
+  mvprintw(LINES - 4, 0, "%s", "==========HELP==========");
+  attroff(COLOR_PAIR(HELP_PAIR));
 
   curs_set(0);
   preview();
