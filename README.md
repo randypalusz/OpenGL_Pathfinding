@@ -3,12 +3,12 @@ A* in C++ with OpenGL visualization
 
 # Completed Things:
   - A* algorithm complete
+  - checking for valid grid
   - terminal visualization
+  - Interactivity (choosing start/end node, wall placement)
 
 # TODO:
   - OpenGL integration
-  - Interactivity (choosing start/end node, wall placement)
-  - checking for valid grid
 
 # Building:
 From the root directory, run the following:
