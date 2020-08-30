@@ -159,7 +159,7 @@ auto CursesGenerateGrid::placeMarker(char marker) -> bool {
       break;
   }
   mvprintw(LINES - 1, 0, "%s", &(markerString[0]));
-  mvprintw(LINES - 2, 0, "%s", "Arrow Keys to Move");
+  mvprintw(LINES - 2, 0, "%s", "Arrow/Vim Keys to Move");
   mvprintw(LINES - 3, 0, "%s", "Enter to Place");
   attron(COLOR_PAIR(HELP_PAIR));
   mvprintw(LINES - 4, 0, "%s", "==========HELP==========");
@@ -173,15 +173,19 @@ auto CursesGenerateGrid::placeMarker(char marker) -> bool {
     keyIn = getch();
     switch (keyIn) {
       case KEY_RIGHT:
+      case 'l':
         update(1, 0);
         break;
       case KEY_LEFT:
+      case 'h':
         update(-1, 0);
         break;
       case KEY_UP:
+      case 'k':
         update(0, -1);
         break;
       case KEY_DOWN:
+      case 'j':
         update(0, 1);
         break;
       case '\n':
@@ -228,7 +232,7 @@ auto CursesGenerateGrid::createShape() -> PlaceShapeParams {
   mvprintw(0, width_ + 3, "%s", "Shape: ");
   mvprintw(LINES - 1, 0, "%s", "Arrow Keys - Modify Shape");
   mvprintw(LINES - 2, 0, "%s", "Enter to Place Shape");
-  mvprintw(LINES - 3, 0, "%s", "'x' to Finalize Grid");
+  mvprintw(LINES - 3, 0, "%s", "SPACE to Finalize Grid");
   mvprintw(LINES - 4, 0, "%s", "'d' to Toggle 'Delete' Mode");
   attron(COLOR_PAIR(HELP_PAIR));
   mvprintw(LINES - 5, 0, "%s", "==========HELP==========");
@@ -238,15 +242,19 @@ auto CursesGenerateGrid::createShape() -> PlaceShapeParams {
     c = getch();
     switch (c) {
       case KEY_RIGHT:
+      case 'l':
         update(1, 0);
         break;
       case KEY_LEFT:
+      case 'h':
         update(-1, 0);
         break;
       case KEY_UP:
+      case 'k':
         update(0, -1);
         break;
       case KEY_DOWN:
+      case 'j':
         update(0, 1);
         break;
       case 'd':
@@ -257,7 +265,7 @@ auto CursesGenerateGrid::createShape() -> PlaceShapeParams {
       case '\n':
         finalize = true;
         break;
-      case 'x':
+      case ' ':
         return PlaceShapeParams{false, deleteWalls, -1, -1};
       default:
         break;
@@ -367,15 +375,19 @@ void CursesGenerateGrid::placeShape(const PlaceShapeParams& placeData) {
     c = getch();
     switch (c) {
       case KEY_RIGHT:
+      case 'l':
         updatePosition(1, 0);
         break;
       case KEY_LEFT:
+      case 'h':
         updatePosition(-1, 0);
         break;
       case KEY_UP:
+      case 'k':
         updatePosition(0, -1);
         break;
       case KEY_DOWN:
+      case 'j':
         updatePosition(0, 1);
         break;
       case 'd':
