@@ -36,7 +36,8 @@ CursesGenerateGrid::CursesGenerateGrid() {
                         {'e', END_PAIR},
                         {'?', POTENTIAL_WALL_PAIR},
                         {'#', WALL_PAIR},
-                        {' ', VALID_PAIR}});
+                        {' ', VALID_PAIR},
+                        {'x', DELETE_PAIR}});
 }
 
 void CursesGenerateGrid::initWindow() {
@@ -58,10 +59,11 @@ void CursesGenerateGrid::initColors() {
   init_pair(WALL_PAIR, COLOR_BLUE, COLOR_BLUE);
   init_pair(VALID_PAIR, INHERIT_COLOR, INHERIT_COLOR);
   init_pair(HELP_PAIR, COLOR_BLACK, COLOR_YELLOW);
+  init_pair(DELETE_PAIR, COLOR_BLACK, COLOR_RED);
 }
 
 auto CursesGenerateGrid::run() -> GenReturnStruct {
-  ShapeReturn data;
+  PlaceShapeParams placeData;
   initWindow();
   while (currentState_ != Exit) {
     // clears the screen (any leftover potential walls/shapes)
@@ -79,15 +81,15 @@ auto CursesGenerateGrid::run() -> GenReturnStruct {
         }
         break;
       case CreateShape:
-        data = createShape();
-        if (data.placeShape) {
+        placeData = createShape();
+        if (placeData.placeShape) {
           currentState_ = PlaceShape;
         } else {
           currentState_ = ChooseVisualization;
         }
         break;
       case PlaceShape:
-        placeShape(data.shapeWidth, data.shapeHeight);
+        placeShape(placeData);
         currentState_ = CreateShape;
         break;
       case ChooseVisualization:
@@ -194,7 +196,7 @@ auto CursesGenerateGrid::placeMarker(char marker) -> bool {
   return true;
 }
 
-auto CursesGenerateGrid::createShape() -> ShapeReturn {
+auto CursesGenerateGrid::createShape() -> PlaceShapeParams {
   int c;
   int shapeTopLeft = width_ + 10;
   int shapeWidth = 1;
@@ -203,12 +205,13 @@ auto CursesGenerateGrid::createShape() -> ShapeReturn {
   int maxShapeHeight = 30;
   bool finalize = false;
   bool updated = true;
+  bool deleteWalls = false;
+  char placeChar = '?';
   // update takes in width/height increment based on the key press
   // and increments the current shape width/height by the passed value
   auto update = [&](int widthIncrement, int heightIncrement) {
     if ((shapeWidth + widthIncrement > maxShapeWidth) ||
-        (shapeWidth + widthIncrement < 1) ||
-        (shapeWidth + widthIncrement >= width_)) {
+        (shapeWidth + widthIncrement < 1) || (shapeWidth + widthIncrement >= width_)) {
       return;
     }
     if ((shapeHeight + heightIncrement > maxShapeHeight) ||
@@ -226,8 +229,9 @@ auto CursesGenerateGrid::createShape() -> ShapeReturn {
   mvprintw(LINES - 1, 0, "%s", "Arrow Keys - Modify Shape");
   mvprintw(LINES - 2, 0, "%s", "Enter to Place Shape");
   mvprintw(LINES - 3, 0, "%s", "'x' to Finalize Grid");
+  mvprintw(LINES - 4, 0, "%s", "'d' to Toggle 'Delete' Mode");
   attron(COLOR_PAIR(HELP_PAIR));
-  mvprintw(LINES - 4, 0, "%s", "==========HELP==========");
+  mvprintw(LINES - 5, 0, "%s", "==========HELP==========");
   attroff(COLOR_PAIR(HELP_PAIR));
 
   while (!finalize) {
@@ -245,11 +249,16 @@ auto CursesGenerateGrid::createShape() -> ShapeReturn {
       case KEY_DOWN:
         update(0, 1);
         break;
+      case 'd':
+        placeChar = (placeChar == '?') ? 'x' : '?';
+        deleteWalls = !deleteWalls;
+        updated = true;
+        break;
       case '\n':
         finalize = true;
         break;
       case 'x':
-        return ShapeReturn{false, -1, -1};
+        return PlaceShapeParams{false, deleteWalls, -1, -1};
       default:
         break;
     }
@@ -259,7 +268,7 @@ auto CursesGenerateGrid::createShape() -> ShapeReturn {
       for (int i = 0; i < maxShapeHeight; i++) {
         for (int j = 0; j < maxShapeWidth; j++) {
           if (j < shapeWidth && i < shapeHeight) {
-            currentChar = '?';
+            currentChar = placeChar;
           } else {
             currentChar = ' ';
           }
@@ -271,10 +280,14 @@ auto CursesGenerateGrid::createShape() -> ShapeReturn {
       updated = false;
     }
   }
-  return ShapeReturn{true, shapeWidth, shapeHeight};
+  return PlaceShapeParams{true, deleteWalls, shapeWidth, shapeHeight};
 }
 
-void CursesGenerateGrid::placeShape(int shapeWidth, int shapeHeight) {
+void CursesGenerateGrid::placeShape(const PlaceShapeParams& placeData) {
+  int shapeWidth = placeData.shapeWidth;
+  int shapeHeight = placeData.shapeHeight;
+  bool deleteWalls = placeData.deleteWalls;
+  char placeChar = placeData.deleteWalls ? 'x' : '?';
   int c;
   // keep track of position by topLeft corner
   int topLeftRow = 0;
@@ -312,9 +325,9 @@ void CursesGenerateGrid::placeShape(int shapeWidth, int shapeHeight) {
         if ((grid_[i][j] == 's') || (grid_[i][j] == 'e')) {
           continue;
         }
-        attron(COLOR_PAIR(charToPairMap.at('?')));
-        mvprintw(i + gridTopLeftRow_, j + gridTopLeftColumn_, "%c", '?');
-        attroff(COLOR_PAIR(charToPairMap.at('?')));
+        attron(COLOR_PAIR(charToPairMap.at(placeChar)));
+        mvprintw(i + gridTopLeftRow_, j + gridTopLeftColumn_, "%c", placeChar);
+        attroff(COLOR_PAIR(charToPairMap.at(placeChar)));
       }
     }
     updated = false;
@@ -330,17 +343,21 @@ void CursesGenerateGrid::placeShape(int shapeWidth, int shapeHeight) {
         if ((grid_[i][j] == 's') || (grid_[i][j] == 'e')) {
           continue;
         }
-        grid_[i][j] = '#';
+        if (deleteWalls) {
+          grid_[i][j] = ' ';
+        } else {
+          grid_[i][j] = '#';
+        }
       }
     }
-    finalize = true;
   };
 
   mvprintw(LINES - 1, 0, "%s", "Arrow Keys to Move Preview");
-  mvprintw(LINES - 2, 0, "%s", "Enter to Finalize Shape");
-  mvprintw(LINES - 3, 0, "%s", "'x' to Cancel Placement");
+  mvprintw(LINES - 2, 0, "%s", "Enter to Place/Delete Shape");
+  mvprintw(LINES - 3, 0, "%s", "BACKSPACE to go to create screen");
+  mvprintw(LINES - 4, 0, "%s", "'d' to Toggle 'Delete' Mode");
   attron(COLOR_PAIR(HELP_PAIR));
-  mvprintw(LINES - 4, 0, "%s", "==========HELP==========");
+  mvprintw(LINES - 5, 0, "%s", "==========HELP==========");
   attroff(COLOR_PAIR(HELP_PAIR));
 
   curs_set(0);
@@ -361,11 +378,18 @@ void CursesGenerateGrid::placeShape(int shapeWidth, int shapeHeight) {
       case KEY_DOWN:
         updatePosition(0, 1);
         break;
+      case 'd':
+        placeChar = (placeChar == 'x') ? '?' : 'x';
+        deleteWalls = !deleteWalls;
+        updated = true;
+        break;
       case '\n':
         place();
         break;
       // cancel placement
-      case 'x':
+      case '\b':
+      case 127:
+      case KEY_BACKSPACE:
         finalize = true;
         break;
       default:

@@ -7,19 +7,13 @@
 #include "GenReturnStruct.hpp"
 
 class CursesGenerateGrid {
-  enum State {
-    CreateShape,
-    PlaceShape,
-    PlaceStart,
-    PlaceEnd,
-    ChooseVisualization,
-    Exit
-  };
+  enum State { CreateShape, PlaceShape, PlaceStart, PlaceEnd, ChooseVisualization, Exit };
 
   // placeShape set to false means to ignore the other two parameters, go to the
   // Exit state
-  struct ShapeReturn {
+  struct PlaceShapeParams {
     bool placeShape;
+    bool deleteWalls;
     int shapeWidth;
     int shapeHeight;
   };
@@ -34,9 +28,9 @@ class CursesGenerateGrid {
   void update();
   void initWindow();
   void initColors();
-  auto createShape() -> ShapeReturn;
+  auto createShape() -> PlaceShapeParams;
   // TODO: implement placeShape
-  void placeShape(int shapeWidth, int shapeHeight);
+  void placeShape(const PlaceShapeParams&);
   auto placeMarker(char) -> bool;
   void end();
   State currentState_;
@@ -53,6 +47,7 @@ class CursesGenerateGrid {
   const int WALL_PAIR = 4;
   const int VALID_PAIR = 5;
   const int HELP_PAIR = 6;
+  const int DELETE_PAIR = 7;
 };
 
 #endif
