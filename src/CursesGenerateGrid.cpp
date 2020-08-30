@@ -15,11 +15,11 @@ CursesGenerateGrid::CursesGenerateGrid() {
   std::cout << std::endl << "Enter Grid Height: ";
   std::cin >> tempHeight;
   std::cout << std::endl;
-  if (tempWidth > 60) {
-    tempWidth = 60;
+  if (tempWidth > maxGridWidth_) {
+    tempWidth = maxGridWidth_;
   }
-  if (tempHeight > 60) {
-    tempHeight = 60;
+  if (tempHeight > maxGridHeight_) {
+    tempHeight = maxGridHeight_;
   }
   width_ = tempWidth;
   height_ = tempHeight;
@@ -125,6 +125,7 @@ auto CursesGenerateGrid::placeMarker(char marker) -> bool {
   int row = 0;
   int column = 0;
   std::string markerString;
+  int markerColorPair;
   bool finalize = false;
   bool updated = true;
   auto update = [&](int widthIncrement, int heightIncrement) {
@@ -150,19 +151,24 @@ auto CursesGenerateGrid::placeMarker(char marker) -> bool {
   switch (marker) {
     case ('s'):
       markerString = "Placing Start...";
+      markerColorPair = START_PAIR;
       break;
     case ('e'):
       markerString = "Placing End...";
+      markerColorPair = END_PAIR;
       break;
     default:
       markerString = "Undefined";
       break;
   }
-  mvprintw(LINES - 1, 0, "%s", &(markerString[0]));
-  mvprintw(LINES - 2, 0, "%s", "Arrow/Vim Keys to Move");
-  mvprintw(LINES - 3, 0, "%s", "Enter to Place");
+
+  attron(COLOR_PAIR(markerColorPair));
+  mvprintw(LINES - 8, 0, "%s", &(markerString[0]));
+  attroff(COLOR_PAIR(markerColorPair));
+  mvprintw(LINES - 1, 0, "%s", "Arrow/Vim Keys to Move");
+  mvprintw(LINES - 2, 0, "%s", "Enter to Place");
   attron(COLOR_PAIR(HELP_PAIR));
-  mvprintw(LINES - 4, 0, "%s", "==========HELP==========");
+  mvprintw(LINES - 3, 0, "%s", "==========HELP==========");
   attroff(COLOR_PAIR(HELP_PAIR));
 
   curs_set(1);
@@ -210,6 +216,7 @@ auto CursesGenerateGrid::createShape() -> PlaceShapeParams {
   bool finalize = false;
   bool updated = true;
   bool deleteWalls = false;
+  int currentPair;
   char placeChar = '?';
   // update takes in width/height increment based on the key press
   // and increments the current shape width/height by the passed value
@@ -230,7 +237,7 @@ auto CursesGenerateGrid::createShape() -> PlaceShapeParams {
 
   curs_set(0);
   mvprintw(0, width_ + 3, "%s", "Shape: ");
-  mvprintw(LINES - 1, 0, "%s", "Arrow Keys - Modify Shape");
+  mvprintw(LINES - 1, 0, "%s", "Arrow/Vim Keys - Modify Shape");
   mvprintw(LINES - 2, 0, "%s", "Enter to Place Shape");
   mvprintw(LINES - 3, 0, "%s", "SPACE to Finalize Grid");
   mvprintw(LINES - 4, 0, "%s", "'d' to Toggle 'Delete' Mode");
@@ -285,6 +292,13 @@ auto CursesGenerateGrid::createShape() -> PlaceShapeParams {
           attroff(COLOR_PAIR(charToPairMap.at(currentChar)));
         }
       }
+
+      currentPair = (deleteWalls) ? DELETE_PAIR : POTENTIAL_WALL_PAIR;
+
+      attron(COLOR_PAIR(currentPair));
+      mvprintw(LINES - 8, 0, "%s", "CREATING SHAPE");
+      attroff(COLOR_PAIR(currentPair));
+
       updated = false;
     }
   }
@@ -325,6 +339,8 @@ void CursesGenerateGrid::placeShape(const PlaceShapeParams& placeData) {
     int startColumn = std::max(0, topLeftColumn);
     int endRow = std::min(height_, topLeftRow + shapeHeight);
     int endColumn = std::min(width_, topLeftColumn + shapeWidth);
+    int currentPair = deleteWalls ? DELETE_PAIR : POTENTIAL_WALL_PAIR;
+    const char* placeString = deleteWalls ? "DELETING WALLS" : "PLACING WALLS";
     // update to restore the grid to its actual state
     update();
     // draw preview walls over the grid
@@ -338,6 +354,15 @@ void CursesGenerateGrid::placeShape(const PlaceShapeParams& placeData) {
         attroff(COLOR_PAIR(charToPairMap.at(placeChar)));
       }
     }
+    // quick clear of the previous string
+    attron(COLOR_PAIR(UNSELECT_PAIR));
+    mvprintw(LINES - 8, 0, "%s", "               ");
+    attroff(COLOR_PAIR(UNSELECT_PAIR));
+
+    // update the delete/place string
+    attron(COLOR_PAIR(currentPair));
+    mvprintw(LINES - 8, 0, "%s", placeString);
+    attroff(COLOR_PAIR(currentPair));
     updated = false;
   };
 
@@ -360,7 +385,7 @@ void CursesGenerateGrid::placeShape(const PlaceShapeParams& placeData) {
     }
   };
 
-  mvprintw(LINES - 1, 0, "%s", "Arrow Keys to Move Preview");
+  mvprintw(LINES - 1, 0, "%s", "Arrow/Vim Keys to Move Preview");
   mvprintw(LINES - 2, 0, "%s", "Enter to Place/Delete Shape");
   mvprintw(LINES - 3, 0, "%s", "BACKSPACE/SPACE to go to create screen");
   mvprintw(LINES - 4, 0, "%s", "'d' to Toggle 'Delete' Mode");

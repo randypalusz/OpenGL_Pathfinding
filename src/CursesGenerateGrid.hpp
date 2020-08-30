@@ -40,6 +40,8 @@ class CursesGenerateGrid {
   int width_;
   const int gridTopLeftRow_ = 1;
   const int gridTopLeftColumn_ = 1;
+  const int maxGridWidth_ = 70;
+  const int maxGridHeight_ = 50;
   std::unordered_map<char, int> charToPairMap;
   const int INHERIT_COLOR = -1;
   const int START_PAIR = 1;
