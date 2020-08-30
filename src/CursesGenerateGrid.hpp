@@ -29,12 +29,13 @@ class CursesGenerateGrid {
   void initWindow();
   void initColors();
   auto createShape() -> PlaceShapeParams;
-  // TODO: implement placeShape
   void placeShape(const PlaceShapeParams&);
   auto placeMarker(char) -> bool;
+  void chooseVisualization();
   void end();
   State currentState_;
   std::vector<std::vector<char>> grid_;
+  std::string visualizationMethod_ = "curses";
   int height_;
   int width_;
   const int gridTopLeftRow_ = 1;
@@ -48,6 +49,8 @@ class CursesGenerateGrid {
   const int VALID_PAIR = 5;
   const int HELP_PAIR = 6;
   const int DELETE_PAIR = 7;
+  const int SELECT_PAIR = 8;
+  const int UNSELECT_PAIR = 9;
 };
 
 #endif

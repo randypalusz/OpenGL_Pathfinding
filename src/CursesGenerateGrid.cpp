@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 
 CursesGenerateGrid::CursesGenerateGrid() {
   int tempWidth;
@@ -60,6 +61,8 @@ void CursesGenerateGrid::initColors() {
   init_pair(VALID_PAIR, INHERIT_COLOR, INHERIT_COLOR);
   init_pair(HELP_PAIR, COLOR_BLACK, COLOR_YELLOW);
   init_pair(DELETE_PAIR, COLOR_BLACK, COLOR_RED);
+  init_pair(SELECT_PAIR, COLOR_BLACK, COLOR_GREEN);
+  init_pair(UNSELECT_PAIR, INHERIT_COLOR, INHERIT_COLOR);
 }
 
 auto CursesGenerateGrid::run() -> GenReturnStruct {
@@ -93,8 +96,7 @@ auto CursesGenerateGrid::run() -> GenReturnStruct {
         currentState_ = CreateShape;
         break;
       case ChooseVisualization:
-        // TODO: Function to ask user which visualization method to use
-        // chooseVisualization();
+        chooseVisualization();
         currentState_ = Exit;
         break;
       case Exit:
@@ -105,9 +107,7 @@ auto CursesGenerateGrid::run() -> GenReturnStruct {
     }
   }
   end();
-  // TODO: Paramaterize the second argument once
-  //       chooseVisualization is implemented
-  return GenReturnStruct{grid_, "curses"};
+  return GenReturnStruct{grid_, visualizationMethod_};
 }
 
 void CursesGenerateGrid::end() {
@@ -362,7 +362,7 @@ void CursesGenerateGrid::placeShape(const PlaceShapeParams& placeData) {
 
   mvprintw(LINES - 1, 0, "%s", "Arrow Keys to Move Preview");
   mvprintw(LINES - 2, 0, "%s", "Enter to Place/Delete Shape");
-  mvprintw(LINES - 3, 0, "%s", "BACKSPACE to go to create screen");
+  mvprintw(LINES - 3, 0, "%s", "BACKSPACE/SPACE to go to create screen");
   mvprintw(LINES - 4, 0, "%s", "'d' to Toggle 'Delete' Mode");
   attron(COLOR_PAIR(HELP_PAIR));
   mvprintw(LINES - 5, 0, "%s", "==========HELP==========");
@@ -402,6 +402,7 @@ void CursesGenerateGrid::placeShape(const PlaceShapeParams& placeData) {
       case '\b':
       case 127:
       case KEY_BACKSPACE:
+      case ' ':
         finalize = true;
         break;
       default:
@@ -411,6 +412,63 @@ void CursesGenerateGrid::placeShape(const PlaceShapeParams& placeData) {
       preview();
     }
   }
+}
+
+void CursesGenerateGrid::chooseVisualization() {
+  int c;
+  int selected = false;
+  int selectedRow = 1;
+  int numMethods = 2;
+  std::unordered_map<int, const char*> rowToString{{1, "NCurses Animation"},
+                                                   {2, "Console (Performance)"}};
+  std::unordered_map<int, std::string> rowToReturn{{1, "curses"}, {2, "console"}};
+
+  auto select = [&](int rowChange) {
+    int newRow = selectedRow + rowChange;
+    if ((newRow < 1) || (newRow > numMethods)) {
+      return;
+    }
+    for (int i = 1; i <= numMethods; i++) {
+      if (i == newRow) {
+        attron(COLOR_PAIR(SELECT_PAIR));
+        mvprintw(i, 0, "%s", rowToString.at(i));
+        attroff(COLOR_PAIR(SELECT_PAIR));
+      } else {
+        attron(COLOR_PAIR(UNSELECT_PAIR));
+        mvprintw(i, 0, "%s", rowToString.at(i));
+        attroff(COLOR_PAIR(UNSELECT_PAIR));
+      }
+    }
+    selectedRow = newRow;
+    refresh();
+  };
+
+  clear();
+  attron(COLOR_PAIR(HELP_PAIR));
+  mvprintw(0, 0, "%s", "=====Choose a Visuzliation Method=====");
+  attroff(COLOR_PAIR(HELP_PAIR));
+  select(0);
+
+  while (!selected) {
+    c = getch();
+    switch (c) {
+      case KEY_UP:
+      case 'k':
+        select(-1);
+        break;
+      case KEY_DOWN:
+      case 'j':
+        select(1);
+        break;
+      case '\n':
+        selected = true;
+        break;
+      default:
+        break;
+    }
+  }
+
+  visualizationMethod_ = rowToReturn.at(selectedRow);
 }
 
 void CursesGenerateGrid::update() {
