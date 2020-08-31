@@ -6,7 +6,7 @@
 
 struct GenReturnStruct {
   std::vector<std::vector<char>> grid;
-  std::string visualizionMethod;
+  std::string visualizationMethod;
 };
 
 #endif
