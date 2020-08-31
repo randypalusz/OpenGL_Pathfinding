@@ -128,7 +128,7 @@ void A_Star::calculateShortestNcurses() {
       // backtrack through parents, return grid updated with shortest path
       backtrackNcurses(currentNode);
       w.update(grid_);
-      w.end(true, grid_.size());
+      w.end(true, height_);
       return;
     }
 
@@ -172,7 +172,7 @@ void A_Star::calculateShortestNcurses() {
       }
     }
   }
-  w.end(false, 0);
+  w.end(false, height_);
   return;
 }
 

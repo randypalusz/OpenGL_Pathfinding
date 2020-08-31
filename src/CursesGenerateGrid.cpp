@@ -15,14 +15,16 @@ CursesGenerateGrid::CursesGenerateGrid() {
   std::cout << std::endl << "Enter Grid Height: ";
   std::cin >> tempHeight;
   std::cout << std::endl;
-  if (tempWidth > maxGridWidth_) {
-    tempWidth = maxGridWidth_;
-  }
-  if (tempHeight > maxGridHeight_) {
-    tempHeight = maxGridHeight_;
-  }
-  width_ = tempWidth;
-  height_ = tempHeight;
+  width_ = std::clamp(tempWidth, minGridWidth_, maxGridWidth_);
+  height_ = std::clamp(tempHeight, minGridHeight_, maxGridHeight_);
+  // if (tempWidth > maxGridWidth_) {
+  //   tempWidth = maxGridWidth_;
+  // }
+  // if (tempHeight > maxGridHeight_) {
+  //   tempHeight = maxGridHeight_;
+  // }
+  // width_ = tempWidth;
+  // height_ = tempHeight;
 
   for (int i = 0; i < height_; i++) {
     grid_.push_back(std::vector<char>{});

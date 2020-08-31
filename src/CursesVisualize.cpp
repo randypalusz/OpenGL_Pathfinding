@@ -1,10 +1,11 @@
 #include "CursesVisualize.hpp"
 
 #include <ncurses.h>
-#include "CharStruct.hpp"
 
 #include <iostream>
 #include <vector>
+
+#include "CharStruct.hpp"
 
 CursesVisualize::CursesVisualize(CharStruct chars, int height, int width) {
   charToPairMap.insert({{chars.start, START_PAIR},
