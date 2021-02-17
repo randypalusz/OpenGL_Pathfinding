@@ -8,22 +8,6 @@
 #include "CursesGenerateGrid.hpp"
 #include "CursesVisualize.hpp"
 
-// void sfmlTest() {
-// sf::RenderWindow window(sf::VideoMode(200, 200), "SFML Window");
-// sf::CircleShape shape(100.f);
-// shape.setFillColor(sf::Color::Green);
-// while (window.isOpen()) {
-// sf::Event event;
-// while (window.pollEvent(event)) {
-// if (event.type == sf::Event::Closed) {
-// window.close();
-//}
-//}
-// window.clear();
-// window.draw(shape);
-// window.display();
-//}
-//}
 
 auto createAStarFromGrid(bool hugWalls) -> A_Star {
   std::vector<std::vector<char>> grid{};

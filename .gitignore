@@ -2,3 +2,5 @@ build
 .vscode
 Debug/
 *.code-workspace
+*.exe
+*.out

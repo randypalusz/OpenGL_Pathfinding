@@ -4,9 +4,14 @@
 
 #include <algorithm>
 #include <chrono>
+#if _WIN32 
+#include <experimental/filesystem>
+#else
 #include <filesystem>
+#endif
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <thread>
 #include <unordered_set>
 #include <utility>
@@ -178,11 +183,19 @@ void A_Star::calculateShortestNcurses() {
 
 void A_Star::loadGridFromFile(const std::string fileName) {
   std::vector<std::vector<char>> v;
+  #if _WIN32
+  auto path = std::experimental::filesystem::current_path();
+  #else
   auto path = std::filesystem::current_path();
+  #endif
   path = path.append("resources");
   path = path.append(fileName);
   // std::cout << "File: " << path << std::endl;
+  #if _WIN32
+  std::ifstream is(path.string());
+  #else
   std::ifstream is(path);
+  #endif
   char c;
   int row = 0;
   v.push_back(std::vector<char>{});

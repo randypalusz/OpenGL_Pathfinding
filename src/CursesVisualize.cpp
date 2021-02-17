@@ -1,6 +1,10 @@
 #include "CursesVisualize.hpp"
 
+#if _WIN32 
+#include <curses.h>
+#else
 #include <ncurses.h>
+#endif
 
 #include <iostream>
 #include <vector>

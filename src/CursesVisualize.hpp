@@ -1,7 +1,11 @@
 #ifndef CURSES_VISUALIZE_HPP
 #define CURSES_VISUALIZE_HPP
 
+#if _WIN32 
+#include <curses.h>
+#else
 #include <ncurses.h>
+#endif
 
 #include <unordered_map>
 #include <vector>
